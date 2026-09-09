@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node tests/core.mjs && node tests/ui-contract.mjs && node tests/decade-contract.mjs",
-    "snapshot": "node scripts/snapshot.mjs"
+    "test": "node tests/core.mjs && node tests/ui-contract.mjs && node tests/decade-contract.mjs && node tests/311-ingest.mjs",
+    "snapshot": "node scripts/snapshot.mjs",
+    "snapshot:311": "node scripts/311-snapshot.mjs"
   }
 }
