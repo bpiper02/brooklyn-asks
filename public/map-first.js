@@ -11,16 +11,21 @@
     ['◇','🤝']
   ]);
 
+  function setText(el, value) {
+    if (el && el.textContent !== value) el.textContent = value;
+  }
+
   function translateGlyphs(root=document) {
     root.querySelectorAll('.category-legend i, .category-glyph').forEach(el => {
       const key = (el.textContent || '').trim();
-      if (iconMap.has(key)) el.textContent = iconMap.get(key);
+      if (iconMap.has(key)) setText(el, iconMap.get(key));
     });
   }
 
   function cleanMapCopy() {
     const label = document.querySelector('#mapColorBy')?.previousElementSibling;
-    if (label) label.textContent = 'SHOW ME';
+    setText(label, 'SHOW ME');
+
     const mapSelect = document.querySelector('#mapColorBy');
     if (mapSelect) {
       const labels = {
@@ -28,12 +33,15 @@
         recurring:'Most issues that came back',
         uncertain:'Most issues with unclear funding'
       };
-      [...mapSelect.options].forEach(o => { if (labels[o.value]) o.textContent = labels[o.value]; });
+      [...mapSelect.options].forEach(o => {
+        if (labels[o.value] && o.textContent !== labels[o.value]) o.textContent = labels[o.value];
+      });
     }
+
     const metric = document.querySelector('#legendMetric');
     if (metric) {
       const v = mapSelect?.value;
-      metric.textContent = v === 'recurring' ? 'ISSUES THAT CAME BACK' : v === 'uncertain' ? 'UNCLEAR FUNDING' : 'ISSUES RAISED';
+      setText(metric, v === 'recurring' ? 'ISSUES THAT CAME BACK' : v === 'uncertain' ? 'UNCLEAR FUNDING' : 'ISSUES RAISED');
     }
   }
 
