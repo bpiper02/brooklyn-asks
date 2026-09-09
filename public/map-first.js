@@ -29,6 +29,8 @@
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
   let scheduled = false;
+  let mapStarted = false;
+  let readinessObserver = null;
 
   function setText(el, value) {
     if (el && el.textContent !== value) el.textContent = value;
@@ -121,6 +123,13 @@
       setText(heading,'Pick a neighborhood');
       setText(dossier.querySelector('.dossier-intro'),'Click the map for a quick local brief.');
     }
+    dossier.querySelectorAll('.dossier-statline span').forEach(span => {
+      const text = (span.textContent || '').trim().toLowerCase();
+      if (text === 'matching records') setText(span,'issues in view');
+      if (text === 'recurring records') setText(span,'came back');
+      if (text === 'funded/completed responses') setText(span,'funded or completed');
+      if (text === 'funding unclear / unavailable') setText(span,'unresolved responses');
+    });
   }
 
   function cleanMapCopy() {
@@ -136,19 +145,48 @@
 
     const mapSelect = document.querySelector('#mapColorBy');
     if (mapSelect) {
-      const labels = {volume:'Most issues raised',recurring:'Most issues that came back',uncertain:'Most unclear funding'};
+      const labels = {volume:'Most issues raised',recurring:'Most issues that came back',uncertain:'Most unresolved responses'};
       [...mapSelect.options].forEach(option => { if (labels[option.value]) setText(option,labels[option.value]); });
     }
     const metric = document.querySelector('#legendMetric');
     if (metric) {
       const value = mapSelect?.value;
-      setText(metric,value === 'recurring' ? 'ISSUES THAT CAME BACK' : value === 'uncertain' ? 'UNCLEAR FUNDING' : 'ISSUES RAISED');
+      setText(metric,value === 'recurring' ? 'ISSUES THAT CAME BACK' : value === 'uncertain' ? 'UNRESOLVED RESPONSES' : 'ISSUES RAISED');
     }
   }
 
-  function openMapFirst() {
+  function showStartupMessage() {
+    const root = document.querySelector('#boardMap');
+    if (root && !root.querySelector('.atlas-svg') && !root.querySelector('.map-loading') && !root.querySelector('.map-error')) {
+      root.innerHTML = '<div class="map-loading">Loading Brooklyn map…</div>';
+    }
+  }
+
+  function activateMapOnce() {
+    if (mapStarted) return;
+    mapStarted = true;
+    readinessObserver?.disconnect();
+    readinessObserver = null;
     const mapButton = [...document.querySelectorAll('.nav-tab')].find(button => button.dataset.view === 'map');
-    if (mapButton && !mapButton.classList.contains('is-active')) mapButton.click();
+    mapButton?.click();
+  }
+
+  function startWhenDataReady() {
+    showStartupMessage();
+    const status = document.querySelector('#sourceStatus');
+    if (!status) {
+      window.setTimeout(startWhenDataReady, 50);
+      return;
+    }
+    const ready = () => !/^loading/i.test((status.textContent || '').trim());
+    if (ready()) {
+      activateMapOnce();
+      return;
+    }
+    readinessObserver = new MutationObserver(() => {
+      if (ready()) activateMapOnce();
+    });
+    readinessObserver.observe(status,{subtree:true,childList:true,characterData:true});
   }
 
   function refresh() {
@@ -168,5 +206,8 @@
   const observer = new MutationObserver(scheduleRefresh);
   observer.observe(document.documentElement,{subtree:true,childList:true});
   document.addEventListener('change',scheduleRefresh);
-  window.addEventListener('load',() => { openMapFirst(); scheduleRefresh(); });
+  window.addEventListener('DOMContentLoaded',() => {
+    startWhenDataReady();
+    scheduleRefresh();
+  });
 })();
