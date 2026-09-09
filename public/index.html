@@ -4,9 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#eee7d8" />
-  <meta name="description" content="A sourced public record of Brooklyn Community Board budget requests, agency responses, and recurring asks." />
+  <meta name="description" content="Search what Brooklyn Community Boards asked for, how city agencies responded, and which requests keep coming back." />
   <title>Brooklyn Asks — Public Record Tracker</title>
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./hooky.css" />
 </head>
 <body>
   <header class="site-header">
@@ -29,9 +30,16 @@
 
   <main id="top">
     <section class="intro" aria-labelledby="page-title">
-      <p class="section-label">THE QUESTION</p>
-      <h1 id="page-title">What did Brooklyn ask the city for?</h1>
-      <p class="dek">Search official Community Board budget requests, read the city’s published response, and find needs that keep returning year after year.</p>
+      <p class="section-label">THE PUBLIC RECORD</p>
+      <h1 id="page-title">Brooklyn keeps asking. See how the city answers.</h1>
+      <p class="dek"><strong>All 18 Community Boards. One searchable record.</strong> Find what your neighborhood asked for, compare official agency responses, and surface requests that keep returning year after year.</p>
+
+      <div class="value-strip" aria-label="What Brooklyn Asks helps you do">
+        <p><strong>FIND</strong><span>what each board asked for</span></p>
+        <p><strong>COMPARE</strong><span>the city’s published responses</span></p>
+        <p><strong>FOLLOW</strong><span>asks that return across fiscal years</span></p>
+      </div>
+      <p class="editor-note">The records are public. Following their history should not take hours.</p>
 
       <div class="search-row">
         <label class="search-field" for="search">
@@ -48,10 +56,10 @@
     </section>
 
     <section class="ledger" aria-label="Dataset summary">
-      <article><span class="ledger-label">CURRENT RECORDS</span><strong id="requestCount">—</strong></article>
-      <article><span class="ledger-label">BROOKLYN BOARDS</span><strong id="boardCount">18</strong></article>
-      <article><span class="ledger-label">RECURRING THEMES</span><strong id="repeatCount">—</strong></article>
-      <article><span class="ledger-label">LATEST SOURCE</span><strong id="latestDate">—</strong></article>
+      <article><span class="ledger-label">REQUESTS INDEXED</span><strong id="requestCount">—</strong></article>
+      <article><span class="ledger-label">COMMUNITY BOARDS</span><strong id="boardCount">18</strong></article>
+      <article><span class="ledger-label">RECURRING ASKS</span><strong id="repeatCount">—</strong></article>
+      <article><span class="ledger-label">SOURCE FRESHNESS</span><strong id="latestDate">—</strong></article>
     </section>
 
     <section class="filters" aria-label="Filter requests">
