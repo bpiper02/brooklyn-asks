@@ -1,0 +1,109 @@
+:root { --muted: #514c43; }
+
+h1 {
+  font-size: clamp(44px, 6.1vw, 76px);
+  line-height: .97;
+  letter-spacing: -.038em;
+  font-weight: 800;
+}
+
+.dek {
+  max-width: 850px;
+  margin: 18px 0 18px;
+  color: #2f2c27;
+  font: 20px/1.5 Georgia, "Times New Roman", serif;
+}
+
+.value-strip {
+  max-width: 960px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 18px 0 10px;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.value-strip p {
+  margin: 0;
+  min-height: 72px;
+  padding: 12px 18px 12px 0;
+  border-right: 1px solid var(--rule-light);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+.value-strip p + p { padding-left: 18px; }
+.value-strip p:last-child { border-right: 0; }
+.value-strip strong {
+  color: var(--red);
+  font: 800 11px/1.15 "Courier New", monospace;
+  letter-spacing: .12em;
+}
+.value-strip span {
+  color: var(--ink);
+  font: 700 15px/1.28 Arial, Helvetica, sans-serif;
+}
+.editor-note {
+  max-width: 760px;
+  margin: 9px 0 24px;
+  color: var(--muted);
+  font: italic 15px/1.4 Georgia, "Times New Roman", serif;
+}
+
+.search-field input {
+  min-height: 58px;
+  padding: 12px 14px;
+  font: 20px/1.2 Georgia, "Times New Roman", serif;
+}
+.live-line { font: 12px/1.35 "Courier New", monospace; }
+
+.ledger-label {
+  color: var(--muted);
+  font: 800 11px/1.2 "Courier New", monospace;
+  letter-spacing: .085em;
+}
+.ledger strong {
+  font: 800 36px/.95 Georgia, "Times New Roman", serif;
+  letter-spacing: -.03em;
+}
+
+.filter-field label,
+.check-field,
+.sort-note {
+  color: var(--muted);
+  font: 800 11px/1.2 "Courier New", monospace;
+  letter-spacing: .065em;
+}
+select { padding: 9px 30px 9px 9px; }
+
+.section-head h2 { font-size: clamp(31px, 4.2vw, 46px); }
+.section-head > p { font-size: 15px; line-height: 1.5; }
+.record-row { padding: 20px 0 19px; }
+.request-title {
+  font-size: 23px;
+  line-height: 1.17;
+  font-weight: 800;
+}
+.request-detail { font-size: 15px; line-height: 1.5; }
+.record-agency strong { font: 800 13px/1.25 Arial, Helvetica, sans-serif; }
+.priority { font: 11px/1.35 "Courier New", monospace; }
+.status-short { font: 800 11px/1.3 "Courier New", monospace; }
+.record-details summary { font: 800 11px/1.35 "Courier New", monospace; }
+.response-rule { font: 11px/1.35 "Courier New", monospace; }
+.response { font: 16px/1.55 Georgia, "Times New Roman", serif; }
+.source-strip { font: 11px/1.35 "Courier New", monospace; }
+
+@media (max-width: 720px) {
+  .value-strip { grid-template-columns: 1fr; }
+  .value-strip p {
+    min-height: 58px;
+    border-right: 0;
+    border-bottom: 1px solid var(--rule-light);
+    padding: 10px 0;
+  }
+  .value-strip p + p { padding-left: 0; }
+  .value-strip p:last-child { border-bottom: 0; }
+  .value-strip span { font-size: 14px; }
+  .dek { font-size: 18px; }
+  .request-title { font-size: 21px; }
+}
