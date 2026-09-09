@@ -2,9 +2,31 @@ const API_ROWS = 'https://data.cityofnewyork.us/resource/vn4m-mk4t.json?$limit=5
 const API_META = 'https://data.cityofnewyork.us/api/views/vn4m-mk4t/columns.json';
 const OFFICIAL_SOURCE = 'https://data.cityofnewyork.us/d/vn4m-mk4t';
 const DISTRICT_GEOJSON = 'https://data.cityofnewyork.us/resource/5crt-au7u.geojson?$where=boro_cd%20between%20301%20and%20318';
+const HISTORICAL_FILES = [
+  './data/historical-seed.json',
+  './data/historical-2019.json',
+  './data/historical-2018.json',
+  './data/historical-2017.json',
+  './data/historical-2016.json'
+];
+
+const categoryDefs = {
+  transit: { label:'Transit', symbol:'◆', color:'#315b6d' },
+  housing: { label:'Housing', symbol:'⌂', color:'#8b3f32' },
+  parks: { label:'Parks', symbol:'✦', color:'#47623b' },
+  schools: { label:'Schools', symbol:'▣', color:'#6d5a2f' },
+  safety: { label:'Public safety', symbol:'●', color:'#7a4b4b' },
+  health: { label:'Health', symbol:'+', color:'#7a4d69' },
+  infrastructure: { label:'Infrastructure', symbol:'▤', color:'#9a6235' },
+  accessibility: { label:'Accessibility', symbol:'↔', color:'#526c8b' },
+  services: { label:'Community services', symbol:'◇', color:'#596b3d' },
+  other: { label:'Other', symbol:'·', color:'#6b6258' }
+};
 
 const state = {
   records: [],
+  coverage: [],
+  boardMeta: new Map(),
   visible: 24,
   usingLive: false,
   view: 'archive',
@@ -45,6 +67,20 @@ const statusLabels = {
   not_funded:'Supported · not accommodated', not_supported:'Not supported', followup:'Needs follow-up', unknown:'Response unclassified'
 };
 
+function inferCategory(record={}) {
+  const t = normalize([record.request, record.detail, record.agency].join(' '));
+  if (/(subway|bus|transit|traffic|street|road|bike|bicycle|pedestrian|transportation|commuter van|station|mta|nycta|dot)/.test(t)) return 'transit';
+  if (/(housing|affordable|nycha|tenant|residential|hpd|homeless shelter)/.test(t)) return 'housing';
+  if (/(park|playground|pool|recreation|green space|tree|parks and recreation)/.test(t)) return 'parks';
+  if (/(school|classroom|education|student|sca|college|library)/.test(t)) return 'schools';
+  if (/(police|nypd|fire|fdny|crossing guard|public safety|precinct|ems)/.test(t)) return 'safety';
+  if (/(health|hospital|clinic|mental health|aging|senior|elder|hospitals corporation)/.test(t)) return 'health';
+  if (/(sewer|flood|drain|water|infrastructure|reconstruct|construction|building|facility|capital repair|dep)/.test(t)) return 'infrastructure';
+  if (/(accessib|ada|wheelchair|elevator|mobility|universal design)/.test(t)) return 'accessibility';
+  if (/(community service|youth|workforce|sanitation|social service|outreach|case management|board budget|staffing)/.test(t)) return 'services';
+  return 'other';
+}
+
 function inferFieldMap(columns=[]) {
   const byName = new Map(columns.map(c => [normalize(c.name), c.fieldName]));
   const pick = (...labels) => {
@@ -76,7 +112,7 @@ function toRecord(row, map={}) {
   const fiscalYear = parsed.fiscalYear || Number(pickByGuess(row,['fiscal_year','fiscal year'])) || null;
   const response = clean(get('response',['response','agency_response','agency response','budget_response','budget response']));
   const detail = clean(get('explanation',['explanation','request_explanation','reason']) || get('location',['location','site_address','address']));
-  return {
+  const record = {
     board, fiscalYear, trackingCode,
     request: clean(get('request',['request'])), detail,
     agency: clean(get('agency',['agency','responsible_agency'])), priority: clean(get('priority',['priority'])),
@@ -86,6 +122,7 @@ function toRecord(row, map={}) {
     projectKey: '',
     status: classifyResponse(response)
   };
+  return {...record, category: inferCategory(record)};
 }
 
 function dedupeLatest(records) {
@@ -116,10 +153,28 @@ function addRecurring(records) {
   }));
 }
 
+async function loadJson(file, fallback=[]) {
+  try {
+    const res = await fetch(file);
+    if (!res.ok) throw new Error(file);
+    return await res.json();
+  } catch { return fallback; }
+}
+
 async function loadData() {
-  let seed = [];
-  try { seed = await fetch('./data/historical-seed.json').then(r => r.json()); } catch {}
-  seed = seed.map(r => ({...r, status: classifyResponse(r.response)}));
+  const [coverage, boardMeta, ...historicalParts] = await Promise.all([
+    loadJson('./data/historical-coverage.json'),
+    loadJson('./data/board-meta.json'),
+    ...HISTORICAL_FILES.map(file => loadJson(file))
+  ]);
+  state.coverage = coverage.filter(c => c.fiscalYear >= 2016 && c.fiscalYear <= 2026);
+  state.boardMeta = new Map(boardMeta.map(item => [Number(item.board), item]));
+
+  let historical = historicalParts.flat().map(r => {
+    const record = {...r, status: classifyResponse(r.response)};
+    return {...record, category: inferCategory(record)};
+  });
+
   try {
     const [columns, rows] = await Promise.all([
       fetch(API_META).then(r => { if(!r.ok) throw new Error('metadata'); return r.json(); }),
@@ -130,34 +185,56 @@ async function loadData() {
       const b = normalize(r.borough);
       return r.board >= 1 && r.board <= 18 && (!b || b.includes('brooklyn'));
     });
-    state.records = addRecurring(dedupeLatest([...live, ...seed]));
+    state.records = addRecurring(dedupeLatest([...live, ...historical]));
     state.usingLive = true;
-    $('#sourceStatus').textContent = `CURRENT NYC OPEN DATA · ${seed.length} SOURCED HISTORY RECORDS ALSO INDEXED`;
+    $('#sourceStatus').textContent = `CURRENT NYC OPEN DATA · ${historical.length} EXTRACTED HISTORICAL RECORDS · FY2016–FY2026 SOURCES INDEXED`;
   } catch (err) {
-    console.warn('Live API unavailable; using seed data', err);
-    state.records = addRecurring(dedupeLatest(seed));
-    $('#sourceStatus').textContent = 'PREVIEW MODE · LIVE NYC API UNAVAILABLE IN THIS SESSION';
+    console.warn('Live API unavailable; using historical data', err);
+    state.records = addRecurring(dedupeLatest(historical));
+    $('#sourceStatus').textContent = 'PREVIEW MODE · HISTORICAL SOURCES LOADED · LIVE NYC API UNAVAILABLE';
   }
-  populateBoards();
+  populateFilters();
+  renderCategoryLegend();
   render();
 }
 
-function populateBoards() {
-  const select = $('#boardFilter');
-  for (let i=1;i<=18;i++) {
-    const o = document.createElement('option'); o.value=String(i); o.textContent=`Brooklyn CB ${i}`; select.appendChild(o);
-  }
+function metaForBoard(board) {
+  return state.boardMeta.get(Number(board)) || { shortName:`Community Board ${board}`, neighborhoods:[], accent:'#17354a' };
 }
+function populateFilters() {
+  const boardSelect = $('#boardFilter');
+  for (let i=1;i<=18;i++) {
+    const meta = metaForBoard(i);
+    const o = document.createElement('option');
+    o.value=String(i);
+    o.textContent=`CB ${i} · ${meta.shortName}`;
+    boardSelect.appendChild(o);
+  }
+  const yearSelect = $('#yearFilter');
+  const years = state.coverage.length ? state.coverage.map(c=>c.fiscalYear) : Array.from({length:11},(_,i)=>2016+i);
+  [...new Set(years)].sort((a,b)=>b-a).forEach(year => {
+    const o=document.createElement('option');
+    o.value=String(year);
+    o.textContent=`FY ${year}`;
+    yearSelect.appendChild(o);
+  });
+}
+
 function filteredRecords({ignoreBoard=false}={}) {
   const q = normalize($('#search').value);
   const board = $('#boardFilter').value;
+  const year = $('#yearFilter').value;
+  const category = $('#categoryFilter').value;
   const status = $('#statusFilter').value;
   const repeatOnly = $('#repeatOnly').checked;
   return state.records.filter(r => {
     if (!ignoreBoard && board !== 'all' && String(r.board) !== board) return false;
+    if (year !== 'all' && String(r.fiscalYear) !== year) return false;
+    if (category !== 'all' && r.category !== category) return false;
     if (status !== 'all' && r.status !== status) return false;
     if (repeatOnly && !(r.recurringTheme || r.repeatedProject)) return false;
-    if (q && !normalize([r.request,r.detail,r.agency,r.response,r.trackingCode,`cb ${r.board}`].join(' ')).includes(q)) return false;
+    const meta = metaForBoard(r.board);
+    if (q && !normalize([r.request,r.detail,r.agency,r.response,r.trackingCode,`cb ${r.board}`,meta.shortName,...(meta.neighborhoods||[])].join(' ')).includes(q)) return false;
     return true;
   }).sort((a,b) => {
     if ((b.repeatedProject?1:0)!==(a.repeatedProject?1:0)) return (b.repeatedProject?1:0)-(a.repeatedProject?1:0);
@@ -166,35 +243,56 @@ function filteredRecords({ignoreBoard=false}={}) {
   });
 }
 
+function selectedCoverage() {
+  const year = $('#yearFilter').value;
+  return year === 'all' ? null : state.coverage.find(c => String(c.fiscalYear) === year);
+}
+function coverageMessage(records) {
+  const year = $('#yearFilter').value;
+  const item = selectedCoverage();
+  if (year === 'all') return `${records.length.toLocaleString()} matching extracted records across FY2016–FY2026`;
+  if (records.length) return `${records.length.toLocaleString()} matching extracted records · FY ${year}`;
+  if (item) return `FY ${year} official source set indexed · granular extraction ${item.granularStatus === 'source-indexed' ? 'in progress' : 'partial'}`;
+  return `No extracted records for FY ${year}`;
+}
+
 function render() {
   const records = filteredRecords();
   const latest = state.records.reduce((m,r)=>Math.max(m,new Date(r.publicationDate||0).valueOf()||0),0);
-  const maxYear = Math.max(...state.records.map(x=>x.fiscalYear||0));
-  $('#requestCount').textContent = state.records.filter(r=>r.fiscalYear === maxYear).length.toLocaleString() || state.records.length.toLocaleString();
-  $('#repeatCount').textContent = new Set(state.records.filter(r=>r.recurringTheme).map(r=>`${r.board}|${normalize(r.request)}`)).size.toLocaleString();
+  $('#requestCount').textContent = records.length.toLocaleString();
+  $('#repeatCount').textContent = new Set(records.filter(r=>r.recurringTheme).map(r=>`${r.board}|${normalize(r.request)}`)).size.toLocaleString();
   $('#latestDate').textContent = latest ? new Date(latest).toLocaleDateString('en-US',{month:'short',year:'numeric'}) : '—';
   $('#headerUpdated').textContent = latest ? `UPDATED ${new Date(latest).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).toUpperCase()}` : 'UPDATED —';
   const boardVal = $('#boardFilter').value;
-  $('#resultsTitle').textContent = boardVal === 'all' ? 'Brooklyn-wide' : `Brooklyn Community Board ${boardVal}`;
-  $('#resultMeta').textContent = `${records.length.toLocaleString()} matching records`;
+  const yearVal = $('#yearFilter').value;
+  const boardMeta = boardVal === 'all' ? null : metaForBoard(Number(boardVal));
+  $('#resultsTitle').textContent = boardVal === 'all'
+    ? (yearVal === 'all' ? 'Brooklyn-wide' : `Brooklyn · FY ${yearVal}`)
+    : `${boardMeta.shortName}${yearVal === 'all' ? '' : ` · FY ${yearVal}`}`;
+  $('#resultMeta').textContent = coverageMessage(records);
   $('#clearSearch').hidden = !$('#search').value;
 
   const root = $('#results'); root.innerHTML='';
   if (!records.length) {
-    root.innerHTML='<div class="empty">No matching requests. Try a broader search or clear a filter.</div>';
+    const item = selectedCoverage();
+    root.innerHTML = item
+      ? `<div class="empty"><strong>Official FY ${item.fiscalYear} sources are indexed.</strong><br>${escapeHtml(item.note || 'Granular request extraction is still in progress.')} <a href="${item.sourceUrl}" target="_blank" rel="noopener noreferrer">Open source archive ↗</a></div>`
+      : '<div class="empty">No matching requests. Try a broader search or clear a filter.</div>';
     $('#loadMore').hidden=true;
   } else {
     for (const r of records.slice(0,state.visible)) root.appendChild(recordRow(r));
     $('#loadMore').hidden = records.length <= state.visible;
   }
 
+  updateMapHeading(records);
   if (state.view === 'map') refreshMap();
 }
 
 function recordRow(r) {
   const node = $('#requestTemplate').content.firstElementChild.cloneNode(true);
-  node.querySelector('.board-code').textContent=`BK CB ${String(r.board).padStart(2,'0')}`;
-  node.querySelector('.year').textContent=r.fiscalYear ? `FY ${r.fiscalYear}` : 'FY unknown';
+  const meta = metaForBoard(r.board);
+  node.querySelector('.board-code').textContent=`BK CB ${String(r.board).padStart(2,'0')} · ${meta.shortName}`;
+  node.querySelector('.year').textContent=r.fiscalYear ? `FY ${r.fiscalYear} · ${categoryDefs[r.category]?.label || 'Other'}` : 'FY unknown';
   const repeat=node.querySelector('.repeat-mark');
   if (r.repeatedProject || r.recurringTheme) {
     repeat.hidden=false;
@@ -221,9 +319,7 @@ function switchView(view) {
   $('#archiveView').hidden = view !== 'archive';
   $('#mapView').hidden = view !== 'map';
   $$('.nav-tab').forEach(b => b.classList.toggle('is-active', b.dataset.view === view));
-  if (view === 'map') {
-    initMap();
-  }
+  if (view === 'map') initMap();
 }
 
 async function initMap() {
@@ -245,12 +341,18 @@ function boardFromFeature(feature) {
   if (raw >= 301 && raw <= 318) return raw - 300;
   return null;
 }
-function boardCounts() {
+function boardRecordMap() {
   const records = filteredRecords({ignoreBoard:true});
-  const counts = new Map();
-  for (let i=1;i<=18;i++) counts.set(i,0);
-  for (const r of records) counts.set(r.board,(counts.get(r.board)||0)+1);
-  return counts;
+  const groups = new Map();
+  for (let i=1;i<=18;i++) groups.set(i,[]);
+  for (const r of records) groups.get(r.board)?.push(r);
+  return groups;
+}
+function metricValue(records) {
+  const metric = $('#mapColorBy').value;
+  if (metric === 'recurring') return records.filter(r=>r.recurringTheme || r.repeatedProject).length;
+  if (metric === 'uncertain') return records.filter(r=>['uncertain','not_funded','followup','unknown'].includes(r.status)).length;
+  return records.length;
 }
 function geometryRings(feature) {
   const g = feature?.geometry;
@@ -271,6 +373,29 @@ function polygonCentroid(poly) {
   for (const [x,y] of ring) { sx+=x; sy+=y; }
   return [sx/ring.length, sy/ring.length];
 }
+function topCategories(records, limit=3) {
+  return countBy(records,r=>r.category).slice(0,limit).map(([id,count])=>({id,count,def:categoryDefs[id] || categoryDefs.other}));
+}
+function metricLabel() {
+  return {volume:'REQUEST VOLUME',recurring:'RECURRING ASKS',uncertain:'FUNDING UNCLEAR'}[$('#mapColorBy').value] || 'REQUEST VOLUME';
+}
+function updateMapHeading(records) {
+  const year = $('#yearFilter').value;
+  $('#mapYearReadout').textContent = year === 'all' ? 'FY 2016–2026' : `FY ${year}`;
+  $('#mapTitle').textContent = year === 'all' ? 'Brooklyn asks, across the decade.' : `Brooklyn asks · FY ${year}`;
+  $('#legendMetric').textContent = metricLabel();
+  const item = selectedCoverage();
+  $('#mapCoverageNote').textContent = year !== 'all' && !records.length && item
+    ? `Official FY ${year} source set is indexed; granular request extraction is still in progress.`
+    : 'Community District shading reflects the selected metric, not need severity.';
+}
+function renderCategoryLegend() {
+  const root = $('#categoryLegend');
+  root.innerHTML = Object.entries(categoryDefs).filter(([id])=>id!=='other').map(([id,def]) =>
+    `<span data-category="${id}"><i style="--category-color:${def.color}">${def.symbol}</i>${def.label}</span>`
+  ).join('');
+}
+
 function drawDistricts() {
   if (!state.districtData) return;
   const root = $('#boardMap');
@@ -287,46 +412,70 @@ function drawDistricts() {
   const xOffset=(W-usedW)/2, yOffset=(H-usedH)/2;
   const project=([x,y])=>[xOffset+(x-minX)*scale, H-(yOffset+(y-minY)*scale)];
   const pathForFeature=(f)=>geometryRings(f).map(poly=>poly.map(ring=>ring.map((pt,i)=>{const [x,y]=project(pt); return `${i?'L':'M'}${x.toFixed(1)},${y.toFixed(1)}`;}).join(' ')+' Z').join(' ')).join(' ');
-  const counts=boardCounts();
-  const max=Math.max(1,...counts.values());
+  const grouped=boardRecordMap();
+  const values=[...grouped.values()].map(metricValue);
+  const max=Math.max(1,...values);
   const selectedFilter=$('#boardFilter').value;
+  const year=$('#yearFilter').value;
 
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
   svg.setAttribute('class','atlas-svg');
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
   svg.setAttribute('aria-labelledby','atlasTitle atlasDesc');
-  svg.innerHTML='<title id="atlasTitle">Brooklyn Community District record atlas</title><desc id="atlasDesc">Community District shading reflects the number of request records matching the current filters.</desc><text class="atlas-kicker" x="28" y="28">BROOKLYN COMMUNITY DISTRICTS · RECORD INDEX</text>';
+  svg.innerHTML=`<title id="atlasTitle">Brooklyn Community District decade atlas</title><desc id="atlasDesc">Community District shading reflects ${metricLabel().toLowerCase()} for ${year==='all'?'fiscal years 2016 through 2026':`fiscal year ${year}`}.</desc><text class="atlas-kicker" x="28" y="28">BROOKLYN COMMUNITY DISTRICTS · ${year==='all'?'FY2016–FY2026':`FY${year}`} · ${metricLabel()}</text>`;
 
   for (const feature of features) {
     const board=boardFromFeature(feature);
-    const count=counts.get(board)||0;
-    const ratio=count/max;
+    const records=grouped.get(board)||[];
+    const value=metricValue(records);
+    const ratio=value/max;
+    const meta=metaForBoard(board);
     const path=document.createElementNS('http://www.w3.org/2000/svg','path');
     path.setAttribute('d',pathForFeature(feature));
     path.setAttribute('class','atlas-district');
     if (state.selectedBoard===board || String(board)===selectedFilter) path.classList.add('is-selected');
     path.setAttribute('fill','#17354a');
-    path.setAttribute('fill-opacity',String(.10+ratio*.58));
+    path.setAttribute('fill-opacity',String(records.length ? .08+ratio*.66 : .035));
     path.setAttribute('tabindex','0');
     path.setAttribute('role','button');
-    path.setAttribute('aria-label',`Brooklyn Community Board ${board}, ${count} matching records`);
+    path.setAttribute('aria-label',`Community Board ${board}, ${meta.shortName}, ${records.length} matching records`);
     const choose=()=>{state.selectedBoard=board;renderDossier(board);drawDistricts();};
     path.addEventListener('click',choose);
     path.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose();}});
     const title=document.createElementNS('http://www.w3.org/2000/svg','title');
-    title.textContent=`BK CB ${String(board).padStart(2,'0')} · ${count} matching records`;
+    title.textContent=`CB ${String(board).padStart(2,'0')} · ${meta.shortName} · ${records.length} matching records`;
     path.appendChild(title);
     svg.appendChild(path);
 
     const polys=geometryRings(feature);
-    const largest=polys.sort((a,b)=>(b[0]?.length||0)-(a[0]?.length||0))[0];
+    const largest=[...polys].sort((a,b)=>(b[0]?.length||0)-(a[0]?.length||0))[0];
     if (largest) {
       const [cx,cy]=project(polygonCentroid(largest));
+      const marker=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      marker.setAttribute('cx',cx.toFixed(1)); marker.setAttribute('cy',(cy-10).toFixed(1)); marker.setAttribute('r','5');
+      marker.setAttribute('fill',meta.accent || '#17354a'); marker.setAttribute('class','board-accent-dot');
+      svg.appendChild(marker);
+
       const label=document.createElementNS('http://www.w3.org/2000/svg','text');
-      label.setAttribute('x',cx.toFixed(1)); label.setAttribute('y',cy.toFixed(1));
-      label.setAttribute('text-anchor','middle'); label.setAttribute('dominant-baseline','central');
-      label.setAttribute('class','atlas-label'); label.textContent=String(board).padStart(2,'0');
-      svg.appendChild(label);
+      label.setAttribute('x',cx.toFixed(1)); label.setAttribute('y',(cy+3).toFixed(1));
+      label.setAttribute('text-anchor','middle'); label.setAttribute('class','atlas-label atlas-label-name');
+      const top=document.createElementNS('http://www.w3.org/2000/svg','tspan');
+      top.setAttribute('x',cx.toFixed(1)); top.textContent=`CB ${String(board).padStart(2,'0')}`;
+      const second=document.createElementNS('http://www.w3.org/2000/svg','tspan');
+      second.setAttribute('x',cx.toFixed(1)); second.setAttribute('dy','12');
+      second.setAttribute('class','atlas-neighborhood-label'); second.textContent=meta.shortName.split(' / ').slice(0,2).join(' / ');
+      label.append(top,second); svg.appendChild(label);
+
+      const cats=topCategories(records,3);
+      cats.forEach((cat,index)=>{
+        const gx=cx + (index-(cats.length-1)/2)*14;
+        const gy=cy+31;
+        const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        circle.setAttribute('cx',gx.toFixed(1)); circle.setAttribute('cy',gy.toFixed(1)); circle.setAttribute('r','5.5');
+        circle.setAttribute('fill',cat.def.color); circle.setAttribute('class','category-dot'); svg.appendChild(circle);
+        const glyph=document.createElementNS('http://www.w3.org/2000/svg','text');
+        glyph.setAttribute('x',gx.toFixed(1)); glyph.setAttribute('y',(gy+.5).toFixed(1)); glyph.setAttribute('text-anchor','middle'); glyph.setAttribute('dominant-baseline','central'); glyph.setAttribute('class','category-glyph'); glyph.textContent=cat.def.symbol; svg.appendChild(glyph);
+      });
     }
   }
   root.replaceChildren(svg);
@@ -350,16 +499,27 @@ function renderDossier(board) {
   const records = board ? base.filter(r=>r.board===board) : base;
   const recurring = records.filter(r=>r.recurringTheme || r.repeatedProject);
   const funded = records.filter(r=>r.status==='funded').length;
-  const uncertain = records.filter(r=>r.status==='uncertain' || r.status==='not_funded').length;
+  const uncertain = records.filter(r=>['uncertain','not_funded','followup','unknown'].includes(r.status)).length;
   const agencies = countBy(records,r=>r.agency).slice(0,5);
+  const categories = countBy(records,r=>r.category).slice(0,5);
   const recurringTopics = countBy(recurring,r=>r.request).slice(0,5);
+  const year = $('#yearFilter').value;
+  const meta = board ? metaForBoard(board) : null;
 
-  $('#mapDossier h3').textContent = board ? `Brooklyn CB ${String(board).padStart(2,'0')}` : 'Brooklyn-wide';
+  $('#mapDossier h3').textContent = board ? `CB ${String(board).padStart(2,'0')} · ${meta.shortName}` : 'Brooklyn-wide';
+  $('#dossierNeighborhoods').textContent = board && meta.neighborhoods?.length ? meta.neighborhoods.join(' · ') : '';
   $('.dossier-intro').textContent = board
-    ? 'A board-level snapshot of the records matching your current search and response filters.'
-    : 'Choose a Community District on the map to inspect its request volume, recurring themes, agencies, and response mix.';
+    ? `A ${year==='all'?'decade':`FY ${year}`} snapshot of the records matching your current filters.`
+    : 'Choose a Community District on the map to inspect its request volume, recurring themes, agencies, categories, and response mix.';
 
+  const item = selectedCoverage();
+  const sourceOnly = year !== 'all' && !records.length && item;
   const body = $('#dossierBody');
+  if (sourceOnly) {
+    body.innerHTML = `<section class="source-only-map"><span class="section-label">FY ${year} · SOURCE INDEXED</span><h4>Official source set located.</h4><p>${escapeHtml(item.note || 'Granular extraction is still in progress.')}</p><a href="${item.sourceUrl}" target="_blank" rel="noopener noreferrer">Open FY ${year} source archive ↗</a></section>`;
+    return;
+  }
+
   body.innerHTML = `
     <div class="dossier-statline">
       <div><strong>${records.length.toLocaleString()}</strong><span>matching records</span></div>
@@ -368,7 +528,11 @@ function renderDossier(board) {
       <div><strong>${uncertain.toLocaleString()}</strong><span>funding unclear / unavailable</span></div>
     </div>
     <section class="dossier-section">
-      <h4>TOP AGENCIES IN THESE RECORDS</h4>
+      <h4>TOP TOPICS</h4>
+      <ul class="dossier-list category-list">${categories.length ? categories.map(([id,n])=>{const d=categoryDefs[id]||categoryDefs.other;return `<li><i style="--category-color:${d.color}">${d.symbol}</i>${escapeHtml(d.label)}<small>${n} record${n===1?'':'s'}</small></li>`;}).join('') : '<li>No matching topic records.</li>'}</ul>
+    </section>
+    <section class="dossier-section">
+      <h4>TOP AGENCIES</h4>
       <ul class="dossier-list">${agencies.length ? agencies.map(([name,n])=>`<li>${escapeHtml(name)}<small>${n} record${n===1?'':'s'}</small></li>`).join('') : '<li>No matching agency records.</li>'}</ul>
     </section>
     <section class="dossier-section">
@@ -389,17 +553,18 @@ function escapeHtml(value='') {
   return clean(value).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[ch]));
 }
 
-['search','boardFilter','statusFilter','repeatOnly'].forEach(id => {
+['search','yearFilter','boardFilter','categoryFilter','statusFilter','repeatOnly'].forEach(id => {
   $('#'+id).addEventListener(id==='search'?'input':'change',()=>{
     state.visible=24;
     if (id==='boardFilter') state.selectedBoard = $('#boardFilter').value === 'all' ? null : Number($('#boardFilter').value);
     render();
   });
 });
+$('#mapColorBy').addEventListener('change',()=>{ updateMapHeading(filteredRecords()); refreshMap(); });
 $('#clearSearch').addEventListener('click',()=>{$('#search').value='';state.visible=24;render();$('#search').focus();});
 $('#loadMore').addEventListener('click',()=>{state.visible+=24;render();});
 $$('.nav-tab').forEach(button => button.addEventListener('click',()=>switchView(button.dataset.view)));
 
 loadData();
 
-export { normalize, parseTracking, classifyResponse, dedupeLatest, addRecurring, boardFromFeature };
+export { normalize, parseTracking, classifyResponse, dedupeLatest, addRecurring, boardFromFeature, inferCategory };
