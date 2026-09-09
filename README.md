@@ -13,7 +13,7 @@ Brooklyn Asks is an independent public-interest tracker for Brooklyn Community B
 
 ## Historical coverage
 
-The historical archive is being reconstructed from official NYC and Community Board records rather than inferred from the current Open Data snapshot. It currently includes curated records from FY2017, FY2018, FY2025, and FY2026, with newer live records layered separately.
+The archive currently includes curated sourced records from FY2016, FY2017, FY2018, FY2019, FY2025, and FY2026, with newer live records layered separately from NYC Open Data.
 
 Coverage is intentionally incomplete while older board documents are ingested and QA’d. Missing records do not imply that a board made no request.
 
