@@ -87,7 +87,8 @@
 
   Promise.all([
     fetch('./data/historical-seed.json').then(r => r.json()),
-    fetch('./data/historical-2018.json').then(r => r.json())
+    fetch('./data/historical-2018.json').then(r => r.json()),
+    fetch('./data/historical-2017.json').then(r => r.json())
   ]).then(parts => {
     const seen = new Set();
     records = parts.flat().filter(r => r.fiscalYear && r.fiscalYear < 2027).filter(r => {
