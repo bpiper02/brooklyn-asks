@@ -21,5 +21,9 @@ assert.match(mapJs, /Most unresolved responses/, 'Runtime map metric wording mus
 assert.doesNotMatch(clarityJs, /#mapTitle|#mapCoverageNote|#legendMetric|function enhanceMap/, 'Only map-first.js may own map presentation copy');
 assert.doesNotMatch(clarityCss, /\.map-toolbar|\.map-legend|\.map-explainer|\.map-year-readout/, 'Only map-first.css may own map presentation styles');
 assert.ok(index.indexOf('./app.js') < index.indexOf('./map-first.js'), 'Core app must load before the map-first presentation layer');
+assert.match(mapCss, /\.dossier-list\.category-list li\{[^}]*padding:8px 0 8px 34px!important/, 'Topic rows must reserve horizontal space for dossier icons');
+assert.match(mapCss, /\.dossier-list\.category-list li i\{[^}]*left:0!important[^}]*top:50%!important/, 'Dossier icons must have a stable position outside the text');
+assert.match(mapJs, /function replaceDossierIcons\(\)/, 'Dossier topics must use the same icon conversion layer as the map');
+assert.match(mapJs, /replaceDossierIcons\(\)/, 'Dossier icon conversion must run during refresh');
 
 console.log('ui contract tests passed');
