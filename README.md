@@ -5,29 +5,30 @@ Brooklyn Asks is an independent public-interest tracker for Brooklyn Community B
 ## What it does
 
 - Loads the current NYC Register of Community Board Budget Requests.
-- Filters to Brooklyn’s 18 Community Boards.
+- Filters to Brooklyn's 18 Community Boards.
 - Preserves tracking codes, source dates, source links, board, agency, and priority.
-- Adds sourced historical records from official Community District Needs / Budget Request documents.
+- Reconstructs historical Community District Needs / Budget Request records from official sources.
 - Flags recurring themes conservatively across fiscal years.
 - Provides archive, history, map, sharing, feedback, contribution, and legal/privacy views.
 
 ## Historical coverage
 
-The archive currently includes curated sourced records from FY2016, FY2017, FY2018, FY2019, FY2025, and FY2026, with newer live records layered separately from NYC Open Data.
+Official source coverage is continuous from **FY2016 through FY2026**. Brooklyn Asks maintains a source manifest for all 11 fiscal years and links each year to the corresponding NYC Planning / Community District Needs archive.
 
-Coverage is intentionally incomplete while older board documents are ingested and QA’d. Missing records do not imply that a board made no request.
+Request-level normalization is still partial by year. FY2016-FY2019 and selected FY2025-FY2026 records are already extracted; FY2020-FY2024 source sets are indexed and queued for granular extraction. The interface distinguishes source coverage from extracted records so missing rows are never presented as missing public needs.
 
 ## Data sources
 
 - NYC Open Data — Register of Community Board Budget Requests (`vn4m-mk4t`)
 - NYC Department of City Planning — Community District boundaries (`5crt-au7u`)
-- Official NYC Planning and Brooklyn Community Board District Needs / Budget Request documents
+- NYC Planning `labs-cd-needs-statements` historical archive
+- Official Brooklyn Community Board District Needs / Budget Request documents
 
 City agencies remain the authoritative source for City data. Brooklyn Asks is an unofficial reading and research aid.
 
 ## Methodology
 
-An agency response is not proof that a project was physically funded, built, or completed. Published response, derived classification, recurring-theme matching, and independently verified real-world outcome are separate facts.
+An agency response is not proof that a project was physically funded, built, or completed. Published response, derived classification, recurring-theme matching, source coverage, and independently verified real-world outcome are separate facts.
 
 ## Run locally
 
