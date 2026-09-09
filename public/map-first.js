@@ -49,6 +49,17 @@
     });
   }
 
+  function replaceDossierIcons() {
+    document.querySelectorAll('#mapDossier .category-list li i').forEach(holder => {
+      if (holder.dataset.iconReady === '1') return;
+      const category = symbolToCategory[(holder.textContent || '').trim()];
+      if (!category) return;
+      holder.dataset.iconReady = '1';
+      holder.style.setProperty('--category-color', iconColor[category]);
+      holder.innerHTML = legendIcon(category);
+    });
+  }
+
   function boardNumberFromPath(path) {
     const match = (path.getAttribute('aria-label') || '').match(/Community Board\s+(\d+)/i);
     return match ? Number(match[1]) : null;
@@ -171,6 +182,7 @@
   function refresh() {
     scheduled = false;
     replaceLegendIcons();
+    replaceDossierIcons();
     replaceMapIcons();
     cleanMapCopy();
     syncDossier();
