@@ -1,70 +1,93 @@
-/* Map-first public experience */
-.map-first-hero{padding:34px 0 18px;border-bottom:1px solid var(--ink)}
-.map-first-hero .section-label{margin-bottom:8px}
-.map-first-hero h1{max-width:1050px;margin:0;font-size:clamp(44px,6.2vw,78px);line-height:.96;letter-spacing:-.042em}
-.map-first-hero .dek{max-width:830px;margin:14px 0 0;font-size:19px;line-height:1.45}
-.map-first-hook{margin:13px 0 0;color:var(--red);font:800 12px/1.3 "Courier New",monospace;letter-spacing:.06em;text-transform:uppercase}
+/* Map first public experience */
+.map-first-hero{padding:30px 0 16px;border-bottom:1px solid var(--ink)}
+.map-first-hero .section-label{margin-bottom:7px}
+.map-first-hero h1{max-width:1000px;margin:0;font-size:clamp(43px,5.8vw,72px);line-height:.97;letter-spacing:-.04em}
+.map-first-hero .dek{max-width:760px;margin:12px 0 0;font-size:18px;line-height:1.4;color:#292620}
 
-.explore-controls{display:grid;grid-template-columns:minmax(280px,1.5fr) repeat(4,minmax(150px,.7fr));gap:12px;align-items:end;padding:18px 0;border-bottom:3px double var(--ink)}
-.explore-controls .search-field{min-width:0}
-.explore-controls .search-field input{min-height:48px;font-size:17px}
-.explore-controls .filter-field{min-width:0}
-.explore-controls select{width:100%;min-height:48px;font-size:14px}
+.explore-controls{display:grid;grid-template-columns:minmax(270px,1.45fr) repeat(4,minmax(145px,.7fr));gap:11px;align-items:end;padding:16px 0 10px}
+.explore-controls .search-field,.explore-controls .filter-field{min-width:0}
+.explore-controls .search-field input{min-height:46px;font-size:16px}
+.explore-controls select{width:100%;min-height:46px;font-size:14px}
 .explore-controls label>span,.explore-controls .filter-field label{font:800 10px/1.2 "Courier New",monospace;letter-spacing:.07em;color:var(--muted);text-transform:uppercase}
-.explore-options{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:10px 0 4px;color:var(--muted);font:700 10px/1.2 "Courier New",monospace}
+.explore-options{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:8px 0 14px;border-bottom:3px double var(--ink);color:var(--muted);font:700 10px/1.2 "Courier New",monospace}
 .explore-options .check-field{margin:0}
 
-#mapView{padding-top:20px}
-.map-heading{margin-bottom:8px;padding-bottom:8px}
-.map-heading h2{max-width:760px;font-size:clamp(30px,4vw,46px)}
-.map-heading>p{max-width:430px}
-.map-explainer{margin:0 0 13px;padding:0;border:0;background:none;color:var(--muted);font:14px/1.45 Georgia,"Times New Roman",serif}
-.map-explainer strong{color:var(--ink)}
-.map-toolbar{display:grid;grid-template-columns:minmax(230px,.75fr) 220px 1fr;gap:18px;align-items:end;padding:12px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+#mapView{padding-top:16px}
+.map-summary-bar{display:flex;justify-content:space-between;gap:28px;align-items:end;padding:0 0 11px}
+.map-summary-bar h2{max-width:780px;margin:0;font-size:clamp(29px,3.7vw,43px);line-height:1.02}
+.map-summary-bar>p{max-width:390px;margin:0 0 2px;color:var(--muted);font:14px/1.4 Georgia,"Times New Roman",serif;text-align:right}
+
+.map-toolbar{display:grid;grid-template-columns:minmax(220px,.65fr) 190px minmax(420px,1.5fr);gap:20px;align-items:center;padding:10px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink)}
 .map-toolbar .filter-field{min-width:0}
-.map-toolbar select{width:100%;min-height:44px}
-.map-year-readout{padding-bottom:4px}.map-year-readout span{display:block;margin-bottom:3px;font:800 9px/1 "Courier New",monospace;letter-spacing:.08em}.map-year-readout strong{font:800 26px/1 Georgia,"Times New Roman",serif}
-.category-legend{display:flex;justify-content:flex-end;align-items:center;gap:8px 13px;flex-wrap:wrap}
-.category-legend span{display:flex;align-items:center;gap:5px;white-space:nowrap;font:700 9px/1.15 "Courier New",monospace;text-transform:uppercase}
-.category-legend i{width:25px;height:25px;display:grid;place-items:center;border:1px solid var(--rule);border-radius:50%;background:var(--paper-light);font-style:normal;font-size:14px;line-height:1}
+.map-toolbar .filter-field label{font:800 10px/1.2 "Courier New",monospace;letter-spacing:.07em}
+.map-toolbar select{width:100%;min-height:42px;padding-top:7px;padding-bottom:7px}
+.map-year-readout{align-self:center}.map-year-readout span{display:block;margin-bottom:3px;color:var(--muted);font:800 9px/1 "Courier New",monospace;letter-spacing:.08em}.map-year-readout strong{font:800 23px/1 Georgia,"Times New Roman",serif}
+.category-legend{display:grid;grid-template-columns:repeat(5,max-content);justify-content:end;gap:7px 14px;align-items:center}
+.category-legend span{display:flex;align-items:center;gap:6px;white-space:nowrap;font:700 9px/1.1 "Courier New",monospace;text-transform:uppercase}
+.category-legend i{width:24px;height:24px;display:grid;place-items:center;border:1px solid var(--rule);border-radius:50%;background:#f4efe4;color:var(--category-color);font-style:normal}
+.category-legend i svg{width:15px;height:15px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
 .map-layout{display:block!important;border-bottom:0!important}
-.map-frame{padding:14px 0 0!important;border-right:0!important;border-bottom:0!important}
-.atlas-map{min-height:680px!important;background-color:#e8e0d0!important}
-.atlas-svg{height:680px!important}
-.atlas-kicker{font-size:9px!important;letter-spacing:.055em!important}
-.atlas-district{stroke-width:1.5!important}
-.atlas-label{font-size:11px!important;stroke-width:4px!important}
-.atlas-neighborhood-label{font-size:8px!important;font-weight:700!important}
-.board-accent-dot{stroke:var(--paper-light);stroke-width:2}
-.category-dot{stroke:var(--paper-light);stroke-width:1.5}
-.category-glyph{font-size:9px!important;stroke:none!important;paint-order:normal!important}
-.map-legend{display:grid!important;grid-template-columns:auto minmax(150px,260px) auto 1fr;align-items:center;gap:10px!important;margin:10px 0 0!important;padding:0!important;white-space:nowrap;font-size:9px!important}
-.legend-ramp{width:100%!important;min-width:150px}
-#legendMetric{justify-self:end;color:var(--ink);font:800 10px/1 "Courier New",monospace;letter-spacing:.06em}
-.map-source{max-width:900px;margin-top:7px!important;font-size:9px!important;line-height:1.4!important}
+.map-frame{padding:12px 0 0!important;border-right:0!important;border-bottom:0!important}
+.atlas-map{min-height:690px!important;border:1px solid var(--ink)!important;background-color:#e8e0d0!important}
+.atlas-svg{height:690px!important}
+.atlas-kicker{display:none}
+.atlas-district{stroke-width:1.35!important}
+.atlas-district:hover,.atlas-district.is-selected{stroke-width:2.4!important}
+.board-accent-dot{display:none}
+.atlas-label{font-size:10.5px!important;stroke-width:3px!important;stroke:#f4efe4!important;paint-order:stroke;stroke-linejoin:round}
+.atlas-neighborhood-label{font-size:7.4px!important;font-weight:700!important;letter-spacing:-.01em}
+.category-dot{fill:#f4efe4!important;stroke-width:1.2!important}
+.category-glyph{display:none!important}
+.map-topic-icon{pointer-events:none}
+.map-topic-icon path,.map-topic-icon circle,.map-topic-icon line,.map-topic-icon polyline,.map-topic-icon rect{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
 
-.map-dossier{margin-top:22px;padding:20px 0 0!important;border-top:3px double var(--ink);display:grid;grid-template-columns:minmax(240px,.7fr) minmax(0,1.7fr);gap:30px}
+.map-legend{display:grid!important;grid-template-columns:auto minmax(140px,230px) auto 1fr;align-items:center;gap:9px!important;margin:9px 0 0!important;padding:0!important;white-space:nowrap;color:var(--muted);font:800 9px/1 "Courier New",monospace!important}
+.legend-ramp{width:100%!important;min-width:140px;height:7px!important}
+#legendMetric{justify-self:end;color:var(--ink);font:800 9px/1 "Courier New",monospace;letter-spacing:.05em}
+.map-source{margin:6px 0 0!important;color:var(--muted);font:9px/1.35 "Courier New",monospace!important}
+
+.map-dossier{margin-top:18px;padding:17px 0 0!important;border-top:3px double var(--ink);display:grid;grid-template-columns:minmax(220px,.62fr) minmax(0,1.55fr);gap:28px}
 .map-dossier>.section-label,.map-dossier>h3,.map-dossier>.dossier-neighborhoods,.map-dossier>.dossier-intro{grid-column:1}
-.map-dossier h3{font-size:34px!important;margin-bottom:4px!important}
+.map-dossier h3{font-size:31px!important;margin:0 0 3px!important}
+.map-dossier .dossier-intro{margin:5px 0 0;font-size:14px}
 .map-dossier #dossierBody{grid-column:2;grid-row:1 / span 5}
-.dossier-statline{margin:0 0 18px!important}
-.dossier-section h4{font-size:11px!important}
-.dossier-list li{font-size:14px!important}
+.map-dossier.is-empty{display:block;padding:14px 0 2px!important}
+.map-dossier.is-empty .section-label{margin-bottom:3px}
+.map-dossier.is-empty h3{font-size:25px!important}
+.map-dossier.is-empty .dossier-intro{margin:3px 0 0}
+.map-dossier.is-empty #dossierBody,.map-dossier.is-empty #dossierNeighborhoods{display:none}
+.dossier-statline{margin:0 0 14px!important}
+.dossier-statline strong{font-size:22px!important}
+.dossier-section{margin-top:14px!important}
+.dossier-section h4{font-size:10px!important}
+.dossier-list li{font-size:13px!important;padding:6px 0!important}
 
-.post-map-tools{margin-top:34px;border-top:3px double var(--ink)}
+.post-map-tools{margin-top:26px;border-top:3px double var(--ink)}
 .post-map-tools .ledger{margin-top:0}
-.quick-read{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--ink)}
-.quick-read>div{padding:14px 18px 14px 0;border-right:1px solid var(--rule-light)}
-.quick-read>div+div{padding-left:18px}.quick-read>div:last-child{border-right:0}
-.quick-read strong{display:block;margin-bottom:4px;color:var(--red);font:800 9px/1.2 "Courier New",monospace;letter-spacing:.07em}
-.quick-read span{font:14px/1.4 Georgia,"Times New Roman",serif}
-.secondary-tools{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:15px 0;border-bottom:1px solid var(--ink)}
+.post-map-tools .ledger article{min-height:100px}
+.post-map-tools .ledger strong{font-size:31px}
+.secondary-tools{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:12px 0;border-bottom:1px solid var(--ink)}
 .secondary-tools .share-strip{margin:0;padding:0;border:0}
-.secondary-tools .live-line{margin:0}
+.secondary-tools .live-line{margin:0;font-size:10px}
 
-#archiveView{margin-top:38px}
-.archive-intro{margin-bottom:12px;color:var(--muted);font:14px/1.45 Georgia,"Times New Roman",serif}
+#archiveView{margin-top:34px}
+#archiveView .section-head{margin-bottom:8px}
 
-@media(max-width:1050px){.explore-controls{grid-template-columns:1fr 1fr 1fr}.explore-controls .search-field{grid-column:1 / -1}.map-toolbar{grid-template-columns:1fr 190px}.category-legend{grid-column:1 / -1;justify-content:flex-start}.map-dossier{grid-template-columns:1fr}.map-dossier #dossierBody{grid-column:1;grid-row:auto}}
-@media(max-width:700px){.map-first-hero{padding-top:24px}.map-first-hero h1{font-size:43px}.map-first-hero .dek{font-size:17px}.explore-controls{grid-template-columns:1fr 1fr}.explore-controls .search-field{grid-column:1 / -1}.map-toolbar{grid-template-columns:1fr}.category-legend{grid-column:1}.atlas-map{min-height:520px!important}.atlas-svg{height:520px!important}.map-legend{grid-template-columns:auto 1fr auto}.map-legend #legendMetric{grid-column:1 / -1;justify-self:start}.quick-read{grid-template-columns:1fr}.quick-read>div,.quick-read>div+div{padding:12px 0;border-right:0;border-bottom:1px solid var(--rule-light)}.secondary-tools{align-items:flex-start;flex-direction:column}}
+.site-footer{margin-top:42px!important}
+
+@media(max-width:1120px){
+  .explore-controls{grid-template-columns:1fr 1fr 1fr}.explore-controls .search-field{grid-column:1 / -1}
+  .map-toolbar{grid-template-columns:1fr 190px}.category-legend{grid-column:1 / -1;justify-content:start;grid-template-columns:repeat(5,max-content)}
+}
+@media(max-width:760px){
+  .map-first-hero{padding-top:22px}.map-first-hero h1{font-size:42px}.map-first-hero .dek{font-size:17px}
+  .explore-controls{grid-template-columns:1fr 1fr}.explore-controls .search-field{grid-column:1 / -1}
+  .map-summary-bar{display:block}.map-summary-bar>p{text-align:left;margin-top:6px}
+  .map-toolbar{grid-template-columns:1fr}.category-legend{grid-column:1;grid-template-columns:repeat(3,max-content);justify-content:start}
+  .atlas-map{min-height:530px!important}.atlas-svg{height:530px!important}
+  .map-legend{grid-template-columns:auto 1fr auto}.map-legend #legendMetric{grid-column:1 / -1;justify-self:start}
+  .map-dossier{grid-template-columns:1fr}.map-dossier #dossierBody{grid-column:1;grid-row:auto}
+  .secondary-tools{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:500px){.category-legend{grid-template-columns:repeat(2,max-content)}.explore-controls{grid-template-columns:1fr}.explore-controls .search-field{grid-column:1}.map-first-hero h1{font-size:38px}}
