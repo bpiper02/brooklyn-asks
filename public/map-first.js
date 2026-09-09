@@ -21,7 +21,6 @@
     services:'<circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M3 20c.5-4 2.5-6 5-6s4.5 2 5 6M11 20c.5-4 2.5-6 5-6s4.5 2 5 6"/>'
   };
 
-  // Smaller offsets now that full neighborhood names no longer sit inside polygons.
   const labelOffsets = {
     1:[0,-3], 2:[6,0], 3:[3,-5], 4:[6,-2], 5:[8,0], 6:[7,-2],
     7:[6,0], 8:[0,7], 9:[0,4], 10:[11,-2], 11:[8,-2], 12:[4,-3],
@@ -32,6 +31,7 @@
   let scheduled = false;
   let mapStarted = false;
   let hoverBoard = null;
+  let lastSelectedBoard = null;
 
   function setText(el, value) {
     if (el && el.textContent !== value) el.textContent = value;
@@ -73,16 +73,33 @@
     return match ? match[1].trim() : `Community Board ${boardNumberFromPath(path) || ''}`.trim();
   }
 
+  function pathForBoard(board) {
+    return [...document.querySelectorAll('.atlas-district')]
+      .find(path => boardNumberFromPath(path) === Number(board));
+  }
+
   function selectedBoardNumber() {
+    const filterValue = document.querySelector('#boardFilter')?.value;
+    if (filterValue && filterValue !== 'all') return Number(filterValue);
     const path = document.querySelector('.atlas-district.is-selected');
     return path ? boardNumberFromPath(path) : null;
+  }
+
+  function selectedBoardName() {
+    const board = selectedBoardNumber();
+    if (!board) return '';
+    const path = pathForBoard(board);
+    return path ? boardNameFromPath(path) : `CB${String(board).padStart(2,'0')}`;
   }
 
   function simplifyMapLabels(svg) {
     svg.querySelectorAll('.atlas-label-name').forEach(label => {
       const parts = label.querySelectorAll('tspan');
       const board = parts[0]?.textContent?.match(/(\d+)/)?.[1];
-      if (board) setText(parts[0], `CB${String(Number(board)).padStart(2,'0')}`);
+      if (board) {
+        label.dataset.labelBoard = String(Number(board));
+        setText(parts[0], `CB${String(Number(board)).padStart(2,'0')}`);
+      }
       if (parts[1]) parts[1].style.display = 'none';
     });
   }
@@ -103,9 +120,8 @@
         child.dataset.mapShifted = '1';
         if (dx || dy) child.setAttribute('transform', `translate(${dx} ${dy})`);
       }
-      if (child.classList?.contains('category-dot') || child.classList?.contains('category-glyph')) {
-        child.dataset.topicBoard = String(board);
-      }
+      if (child.classList?.contains('atlas-label')) child.dataset.labelBoard = String(board);
+      if (child.classList?.contains('category-dot') || child.classList?.contains('category-glyph')) child.dataset.topicBoard = String(board);
       if (child.classList?.contains('category-glyph')) {
         iconCount += 1;
         if (iconCount > 2) {
@@ -152,31 +168,81 @@
 
   function refreshTopicVisibility() {
     const selected = selectedBoardNumber();
+    const contextBoard = hoverBoard || selected;
     document.querySelectorAll('[data-topic-board]').forEach(node => {
       const board = Number(node.dataset.topicBoard);
-      const visible = board && (board === hoverBoard || board === selected);
-      node.classList.toggle('is-topic-visible', Boolean(visible));
+      node.classList.toggle('is-topic-visible', Boolean(board && board === contextBoard));
     });
   }
 
   function syncBoardStates() {
     const selected = selectedBoardNumber();
+    let activeRow = null;
+
     document.querySelectorAll('.board-directory-row').forEach(row => {
       const board = Number(row.dataset.board);
-      row.classList.toggle('is-active', board === selected);
-      row.classList.toggle('is-hovered', board === hoverBoard);
-      row.setAttribute('aria-pressed', board === selected ? 'true' : 'false');
+      const active = board === selected;
+      const hovered = board === hoverBoard && board !== selected;
+      row.classList.toggle('is-active', active);
+      row.classList.toggle('is-hovered', hovered);
+      row.setAttribute('aria-pressed', active ? 'true' : 'false');
+      if (active) activeRow = row;
     });
+
     document.querySelectorAll('.atlas-district').forEach(path => {
       const board = boardNumberFromPath(path);
-      path.classList.toggle('is-key-hover', board === hoverBoard);
+      path.classList.toggle('is-key-hover', board === hoverBoard && board !== selected);
     });
+
+    document.querySelectorAll('.atlas-label[data-label-board]').forEach(label => {
+      const board = Number(label.dataset.labelBoard);
+      label.classList.toggle('is-label-selected', board === selected);
+      label.classList.toggle('is-label-hovered', board === hoverBoard && board !== selected);
+    });
+
+    if (selected !== lastSelectedBoard) {
+      lastSelectedBoard = selected;
+      activeRow?.scrollIntoView({block:'nearest'});
+    }
+
     refreshTopicVisibility();
   }
 
   function setHoverBoard(board) {
     hoverBoard = board || null;
     syncBoardStates();
+  }
+
+  function setBoardFilterValue(board) {
+    const select = document.querySelector('#boardFilter');
+    if (!select || !board) return false;
+    const value = String(board);
+    if (select.value === value) return false;
+    select.value = value;
+    return true;
+  }
+
+  function installSelectionSync() {
+    const root = document.querySelector('#boardMap');
+    if (!root || root.dataset.selectionSyncReady === '1') return;
+    root.dataset.selectionSyncReady = '1';
+
+    const prepareSelection = event => {
+      const path = event.target?.closest?.('.atlas-district');
+      if (!path) return;
+      const board = boardNumberFromPath(path);
+      const changed = setBoardFilterValue(board);
+      if (!changed) return;
+      queueMicrotask(() => {
+        const select = document.querySelector('#boardFilter');
+        if (select?.value === String(board)) select.dispatchEvent(new Event('change',{bubbles:true}));
+      });
+    };
+
+    root.addEventListener('click', prepareSelection, true);
+    root.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') prepareSelection(event);
+    }, true);
   }
 
   function enhanceDistrictInteractions() {
@@ -216,10 +282,7 @@
         button.addEventListener('mouseleave', () => setHoverBoard(null));
         button.addEventListener('focus', () => setHoverBoard(item.board));
         button.addEventListener('blur', () => setHoverBoard(null));
-        button.addEventListener('click', () => {
-          const path = [...document.querySelectorAll('.atlas-district')].find(candidate => boardNumberFromPath(candidate) === item.board);
-          path?.click();
-        });
+        button.addEventListener('click', () => pathForBoard(item.board)?.click());
         root.appendChild(button);
       }
     }
@@ -248,7 +311,9 @@
   function cleanMapCopy() {
     const year = document.querySelector('#yearFilter')?.value || 'all';
     const title = document.querySelector('#mapTitle');
-    setText(title, year === 'all' ? 'What keeps coming back across Brooklyn?' : `What showed up in ${year}?`);
+    const boardName = selectedBoardName();
+    if (boardName) setText(title, year === 'all' ? `${boardName}: what keeps coming back?` : `${boardName} · ${year}`);
+    else setText(title, year === 'all' ? 'What keeps coming back across Brooklyn?' : `What showed up in ${year}?`);
 
     const note = document.querySelector('#mapCoverageNote');
     if (note && !/official/i.test(note.textContent || '')) setText(note,'Darker = more matching issues. Hover or click a board.');
@@ -284,14 +349,15 @@
 
   function refresh() {
     scheduled = false;
+    installSelectionSync();
     replaceLegendIcons();
     replaceDossierIcons();
     replaceMapIcons();
-    cleanMapCopy();
-    syncDossier();
     syncBoardDirectory();
     enhanceDistrictInteractions();
     syncBoardStates();
+    cleanMapCopy();
+    syncDossier();
   }
 
   function scheduleRefresh() {
