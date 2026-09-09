@@ -43,37 +43,6 @@
     }
   }
 
-  function enhanceMap() {
-    const year = document.querySelector('#yearFilter')?.value;
-    setText(document.querySelector('#mapTitle'), year && year !== 'all' ? `What was still showing up in FY ${year}?` : 'Where does Brooklyn keep getting stuck?');
-    const note = document.querySelector('#mapCoverageNote');
-    if (note && !/official/i.test(note.textContent)) setText(note,'Darker areas have more matching issues under your filters. Topic symbols show what each neighborhood raised most often.');
-    const metric = document.querySelector('#legendMetric');
-    if (metric) {
-      const t = metric.textContent.toLowerCase();
-      setText(metric, t.includes('recurring') ? 'ISSUES THAT CAME BACK' : t.includes('funding') ? 'ISSUES WITH UNCLEAR FUNDING' : 'ISSUES RAISED');
-    }
-    const dossier = document.querySelector('#mapDossier');
-    if (!dossier) return;
-    setText(dossier.querySelector('.section-label'),'NEIGHBORHOOD BRIEF');
-    dossier.querySelectorAll('span').forEach(span => {
-      const t = cleanText(span);
-      if (t === 'matching records') setText(span,'issues in view');
-      if (t === 'recurring records') setText(span,'still coming back');
-      if (t === 'funded/completed responses') setText(span,'city says funded / completed');
-      if (t === 'funding unclear / unavailable') setText(span,'funding unclear / unresolved');
-    });
-    dossier.querySelectorAll('h4').forEach(h => {
-      if (/top topics/i.test(h.textContent)) setText(h,'BIGGEST ISSUES');
-      if (/top agencies/i.test(h.textContent)) setText(h,'AGENCIES INVOLVED');
-      if (/recurring request types/i.test(h.textContent)) setText(h,'WHAT KEPT COMING BACK');
-      if (/official source set located/i.test(h.textContent)) setText(h,'Official records found for this year.');
-    });
-    dossier.querySelectorAll('.section-label').forEach(el => {
-      if (/source indexed/i.test(el.textContent)) setText(el,el.textContent.replace(/SOURCE INDEXED/i,'OFFICIAL RECORDS FOUND'));
-    });
-  }
-
   function enhanceHistory() {
     document.querySelectorAll('.coverage-year').forEach(card => {
       const span = card.querySelector('span');
@@ -90,7 +59,7 @@
     });
   }
 
-  function enhanceAll(){ enhanceArchive(); enhanceMap(); enhanceHistory(); }
+  function enhanceAll(){ enhanceArchive(); enhanceHistory(); }
   let queued = false;
   const observer = new MutationObserver(() => {
     if (queued) return;
