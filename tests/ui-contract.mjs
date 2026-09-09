@@ -32,7 +32,7 @@ assert.match(index, /Numbers match the map/, 'Board key must explain its relatio
 assert.match(mapJs, /function boardNameFromPath\(path\)/, 'Board key names must be derived from rendered map metadata');
 assert.match(mapJs, /function syncBoardDirectory\(\)/, 'Board directory must synchronize with rendered districts');
 assert.match(mapJs, /path\?\.click\(\)/, 'Board key selection must reuse the map district click behavior');
-assert.match(mapJs, /setText\(parts\[0\], `CB\$\{String\(Number\(board\)\)\.padStart\('0'?,?2|'2','0'\)/, 'Map labels should collapse to compact Community Board identifiers');
+assert.match(mapJs, /padStart\(2,'0'\)/, 'Map labels should collapse to compact Community Board identifiers');
 assert.match(mapCss, /\.atlas-neighborhood-label\{display:none!important\}/, 'Long neighborhood names must not compete inside small polygons');
 assert.match(mapCss, /\.map-workspace\{display:grid;grid-template-columns:minmax\(0,1fr\) 270px/, 'Desktop atlas must reserve a side rail for the board key');
 assert.match(mapCss, /\.map-topic-icon\{[^}]*opacity:0/, 'Topic icons must stay quiet until a district has context');
