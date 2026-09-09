@@ -222,6 +222,22 @@
     return true;
   }
 
+  function selectBoard(board) {
+    const select = document.querySelector('#boardFilter');
+    if (!select || !board) return;
+    hoverBoard = null;
+    const value = String(board);
+    const changed = select.value !== value;
+    select.value = value;
+    if (changed) {
+      select.dispatchEvent(new Event('change',{bubbles:true}));
+      return;
+    }
+    syncBoardStates();
+    cleanMapCopy();
+    syncDossier();
+  }
+
   function installSelectionSync() {
     const root = document.querySelector('#boardMap');
     if (!root || root.dataset.selectionSyncReady === '1') return;
@@ -231,6 +247,7 @@
       const path = event.target?.closest?.('.atlas-district');
       if (!path) return;
       const board = boardNumberFromPath(path);
+      hoverBoard = null;
       const changed = setBoardFilterValue(board);
       if (!changed) return;
       queueMicrotask(() => {
@@ -282,7 +299,7 @@
         button.addEventListener('mouseleave', () => setHoverBoard(null));
         button.addEventListener('focus', () => setHoverBoard(item.board));
         button.addEventListener('blur', () => setHoverBoard(null));
-        button.addEventListener('click', () => pathForBoard(item.board)?.click());
+        button.addEventListener('click', () => selectBoard(item.board));
         root.appendChild(button);
       }
     }
@@ -368,7 +385,10 @@
 
   const observer = new MutationObserver(scheduleRefresh);
   observer.observe(document.documentElement,{subtree:true,childList:true});
-  document.addEventListener('change',scheduleRefresh);
+  document.addEventListener('change',event => {
+    if (event.target?.id === 'boardFilter') hoverBoard = null;
+    scheduleRefresh();
+  });
   window.addEventListener('DOMContentLoaded',() => {
     showStartupMessage();
     activateMapOnce();
