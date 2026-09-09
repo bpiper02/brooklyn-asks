@@ -69,7 +69,9 @@ async function main() {
 
   for (const source of SOURCES) {
     const result = await fetchSource(source, today);
-    parts.push(...result.accepted);
+    // Do not spread a very large array into push(); that turns every row into
+    // a function argument and can exceed Node's call-stack/argument limit.
+    for (const row of result.accepted) parts.push(row);
     sourceStats.push({
       dataset:source.id,
       label:source.label,
