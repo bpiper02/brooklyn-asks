@@ -3,6 +3,11 @@
   const normalize = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
   let records = [];
   let coverage = [];
+  let boardMeta = new Map();
+
+  function metaForBoard(board) {
+    return boardMeta.get(Number(board)) || { shortName:`Community Board ${board}` };
+  }
 
   function addOptions() {
     const boards = Array.from(new Set(records.map(r => r.board))).sort((a,b) => a-b);
@@ -10,7 +15,7 @@
     for (const board of boards) {
       const option = document.createElement('option');
       option.value = String(board);
-      option.textContent = `Brooklyn CB ${board}`;
+      option.textContent = `CB ${board} · ${metaForBoard(board).shortName}`;
       q('#historyBoard').appendChild(option);
     }
     for (const year of years) {
@@ -52,11 +57,10 @@
     const filtered = records.filter(r => {
       if (board !== 'all' && String(r.board) !== board) return false;
       if (year !== 'all' && String(r.fiscalYear) !== year) return false;
-      if (search && !normalize([r.request, r.detail, r.agency, r.priority].join(' ')).includes(search)) return false;
+      if (search && !normalize([r.request, r.detail, r.agency, r.priority, metaForBoard(r.board).shortName].join(' ')).includes(search)) return false;
       return true;
     }).sort((a,b) => (b.fiscalYear-a.fiscalYear) || (a.board-b.board));
 
-    const sourceYears = coverage.filter(c => year === 'all' || String(c.fiscalYear) === year);
     const selectedCoverage = year === 'all' ? null : coverage.find(c => String(c.fiscalYear) === year);
     q('#historyMeta').textContent = year === 'all'
       ? `${filtered.length.toLocaleString()} extracted records · ${coverage.length} consecutive source years`
@@ -82,7 +86,7 @@
       article.className = 'history-row';
       const index = document.createElement('div');
       index.className = 'history-index';
-      index.innerHTML = `<strong>BK CB ${String(r.board).padStart(2,'0')}</strong><span>FY ${r.fiscalYear}</span><span>${r.priority ? `Priority ${r.priority}` : ''}</span>`;
+      index.innerHTML = `<strong>BK CB ${String(r.board).padStart(2,'0')}</strong><span>${metaForBoard(r.board).shortName}</span><span>FY ${r.fiscalYear}</span><span>${r.priority ? `Priority ${r.priority}` : ''}</span>`;
 
       const body = document.createElement('div');
       const title = document.createElement('h3');
@@ -121,9 +125,11 @@
 
   Promise.all([
     fetch('./data/historical-coverage.json').then(r => r.json()),
+    fetch('./data/board-meta.json').then(r => r.json()),
     ...dataFiles.map(file => fetch(file).then(r => r.json()))
-  ]).then(([coverageData, ...parts]) => {
+  ]).then(([coverageData, boardData, ...parts]) => {
     coverage = coverageData.filter(c => c.fiscalYear >= 2016 && c.fiscalYear <= 2026);
+    boardMeta = new Map(boardData.map(item => [Number(item.board), item]));
     const seen = new Set();
     records = parts.flat().filter(r => r.fiscalYear >= 2016 && r.fiscalYear <= 2026).filter(r => {
       const key = r.trackingCode || `${r.board}|${r.fiscalYear}|${normalize(r.request)}|${normalize(r.detail)}`;
