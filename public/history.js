@@ -2,10 +2,11 @@
   const q = (s) => document.querySelector(s);
   const normalize = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
   let records = [];
+  let coverage = [];
 
   function addOptions() {
     const boards = Array.from(new Set(records.map(r => r.board))).sort((a,b) => a-b);
-    const years = Array.from(new Set(records.map(r => r.fiscalYear))).sort((a,b) => b-a);
+    const years = coverage.map(r => r.fiscalYear).sort((a,b) => b-a);
     for (const board of boards) {
       const option = document.createElement('option');
       option.value = String(board);
@@ -20,6 +21,30 @@
     }
   }
 
+  function renderCoverage() {
+    const root = q('#coverageTimeline');
+    if (!root) return;
+    root.replaceChildren();
+    for (const item of [...coverage].sort((a,b) => a.fiscalYear-b.fiscalYear)) {
+      const a = document.createElement('a');
+      a.className = `coverage-year ${item.granularStatus}`;
+      a.href = item.sourceUrl;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      const count = records.filter(r => r.fiscalYear === item.fiscalYear).length;
+      a.innerHTML = `<strong>${item.fiscalYear}</strong><span>${count ? `${count} extracted` : 'source indexed'}</span>`;
+      root.appendChild(a);
+    }
+  }
+
+  function sourceOnlyCard(item) {
+    const article = document.createElement('article');
+    article.className = 'source-year-card';
+    const status = item.granularStatus === 'source-indexed' ? 'SOURCE INDEXED' : 'PARTIAL EXTRACTION';
+    article.innerHTML = `<div><span class="section-label">FY ${item.fiscalYear} · ${status}</span><h3>Official Brooklyn source set located.</h3><p>${item.note}</p></div><a href="${item.sourceUrl}" target="_blank" rel="noopener noreferrer">Open official source archive ↗</a>`;
+    return article;
+  }
+
   function render() {
     const board = q('#historyBoard').value;
     const year = q('#historyYear').value;
@@ -31,14 +56,23 @@
       return true;
     }).sort((a,b) => (b.fiscalYear-a.fiscalYear) || (a.board-b.board));
 
-    q('#historyMeta').textContent = `${filtered.length.toLocaleString()} sourced historical records`;
+    const sourceYears = coverage.filter(c => year === 'all' || String(c.fiscalYear) === year);
+    const selectedCoverage = year === 'all' ? null : coverage.find(c => String(c.fiscalYear) === year);
+    q('#historyMeta').textContent = year === 'all'
+      ? `${filtered.length.toLocaleString()} extracted records · ${coverage.length} consecutive source years`
+      : `${filtered.length.toLocaleString()} extracted records · official FY ${year} source indexed`;
+
     const root = q('#historyResults');
     root.replaceChildren();
 
+    if (!filtered.length && selectedCoverage) {
+      root.appendChild(sourceOnlyCard(selectedCoverage));
+      return;
+    }
     if (!filtered.length) {
       const empty = document.createElement('p');
       empty.className = 'empty';
-      empty.textContent = 'No historical records match these filters.';
+      empty.textContent = 'No extracted records match these filters.';
       root.appendChild(empty);
       return;
     }
@@ -46,16 +80,9 @@
     for (const r of filtered) {
       const article = document.createElement('article');
       article.className = 'history-row';
-
       const index = document.createElement('div');
       index.className = 'history-index';
-      const boardEl = document.createElement('strong');
-      boardEl.textContent = `BK CB ${String(r.board).padStart(2,'0')}`;
-      const yearEl = document.createElement('span');
-      yearEl.textContent = `FY ${r.fiscalYear}`;
-      const priorityEl = document.createElement('span');
-      priorityEl.textContent = r.priority ? `Priority ${r.priority}` : '';
-      index.append(boardEl, yearEl, priorityEl);
+      index.innerHTML = `<strong>BK CB ${String(r.board).padStart(2,'0')}</strong><span>FY ${r.fiscalYear}</span><span>${r.priority ? `Priority ${r.priority}` : ''}</span>`;
 
       const body = document.createElement('div');
       const title = document.createElement('h3');
@@ -79,32 +106,37 @@
       link.rel = 'noopener noreferrer';
       link.textContent = 'Official source ↗';
       source.append(response, link);
-
       article.append(index, body, source);
       root.appendChild(article);
     }
   }
 
+  const dataFiles = [
+    './data/historical-seed.json',
+    './data/historical-2019.json',
+    './data/historical-2018.json',
+    './data/historical-2017.json',
+    './data/historical-2016.json'
+  ];
+
   Promise.all([
-    fetch('./data/historical-seed.json').then(r => r.json()),
-    fetch('./data/historical-2019.json').then(r => r.json()),
-    fetch('./data/historical-2018.json').then(r => r.json()),
-    fetch('./data/historical-2017.json').then(r => r.json()),
-    fetch('./data/historical-2016.json').then(r => r.json())
-  ]).then(parts => {
+    fetch('./data/historical-coverage.json').then(r => r.json()),
+    ...dataFiles.map(file => fetch(file).then(r => r.json()))
+  ]).then(([coverageData, ...parts]) => {
+    coverage = coverageData.filter(c => c.fiscalYear >= 2016 && c.fiscalYear <= 2026);
     const seen = new Set();
-    records = parts.flat().filter(r => r.fiscalYear && r.fiscalYear < 2027).filter(r => {
+    records = parts.flat().filter(r => r.fiscalYear >= 2016 && r.fiscalYear <= 2026).filter(r => {
       const key = r.trackingCode || `${r.board}|${r.fiscalYear}|${normalize(r.request)}|${normalize(r.detail)}`;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
     });
     addOptions();
-    for (const selector of ['#historyBoard','#historyYear','#historySearch']) {
-      q(selector).addEventListener('input', render);
-    }
+    renderCoverage();
+    for (const selector of ['#historyBoard','#historyYear','#historySearch']) q(selector).addEventListener('input', render);
     render();
-  }).catch(() => {
+  }).catch((err) => {
+    console.error(err);
     q('#historyResults').textContent = 'Historical records could not be loaded.';
   });
 })();
