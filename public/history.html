@@ -4,66 +4,78 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#eee7d8" />
-  <meta name="description" content="A source-backed decade of Brooklyn Community Board district needs and budget requests, FY2016 through FY2026." />
-  <title>Historical Coverage — Brooklyn Asks</title>
+  <meta name="description" content="Explore which Brooklyn neighborhood issues kept returning across FY2016 through FY2026." />
+  <title>The Decade — Brooklyn Asks</title>
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./hooky.css" />
+  <link rel="stylesheet" href="./clarity.css" />
   <style>
-    .decade-block{padding:24px 0 26px;border-bottom:3px double var(--ink)}
-    .decade-head{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:13px}
-    .decade-head h2{margin:0;font:800 clamp(28px,4vw,44px)/1 Georgia,"Times New Roman",serif;letter-spacing:-.035em}
-    .decade-head p{max-width:520px;margin:0;color:var(--muted);font:14px/1.45 Georgia,"Times New Roman",serif;text-align:right}
+    .decade-block{padding:22px 0 26px;border-bottom:1px solid var(--ink)}
+    .decade-head{display:flex;justify-content:space-between;gap:30px;align-items:end;margin-bottom:13px}
+    .decade-head h2{margin:0;font:800 clamp(30px,4vw,46px)/1 Georgia,"Times New Roman",serif;letter-spacing:-.035em}
+    .decade-head p{max-width:500px;margin:0;color:var(--muted);font:15px/1.45 Georgia,"Times New Roman",serif;text-align:right}
     .coverage-timeline{display:grid;grid-template-columns:repeat(11,minmax(70px,1fr));border:1px solid var(--ink)}
-    .coverage-year{min-height:72px;padding:10px 8px;border-right:1px solid var(--rule-light);display:flex;flex-direction:column;justify-content:space-between;text-decoration:none;background:var(--paper-light)}
+    .coverage-year{min-height:80px;padding:11px 9px;border-right:1px solid var(--rule-light);display:flex;flex-direction:column;justify-content:space-between;text-decoration:none;background:var(--paper-light)}
     .coverage-year:last-child{border-right:0}.coverage-year:hover{background:#e3dac8}
-    .coverage-year strong{font:800 19px/1 Georgia,"Times New Roman",serif}.coverage-year span{color:var(--muted);font:800 9px/1.25 "Courier New",monospace;text-transform:uppercase}
-    .coverage-year.source-indexed{background:transparent}.coverage-year.partial{border-top:4px solid var(--navy)}
-    .coverage-key{margin:9px 0 0;color:var(--muted);font:10px/1.4 "Courier New",monospace}
+    .coverage-year strong{font:800 20px/1 Georgia,"Times New Roman",serif}.coverage-year span{color:var(--muted);font:800 9px/1.3 "Courier New",monospace;text-transform:uppercase}
+    .coverage-year.partial{border-top:4px solid var(--navy)}
+    .coverage-key{margin:10px 0 0;color:var(--muted);font:11px/1.45 Georgia,"Times New Roman",serif}
     .source-year-card{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;padding:28px 0;border-bottom:1px solid var(--ink)}
-    .source-year-card h3{margin:3px 0 8px;font-size:28px}.source-year-card p{margin:0;max-width:700px;font:16px/1.5 Georgia,"Times New Roman",serif;color:var(--muted)}
-    .source-year-card>a{color:var(--navy);font:800 11px/1.3 "Courier New",monospace;text-transform:uppercase}
+    .source-year-card h3{margin:3px 0 8px}.source-year-card>a{color:var(--navy);font:800 11px/1.3 "Courier New",monospace;text-transform:uppercase}
     @media(max-width:850px){.coverage-timeline{grid-template-columns:repeat(4,1fr)}.coverage-year{border-bottom:1px solid var(--rule-light)}.decade-head{display:block}.decade-head p{text-align:left;margin-top:10px}.source-year-card{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <header class="site-header">
-    <div class="utility-row"><span>HISTORICAL EDITION</span><span>BROOKLYN, NEW YORK</span><span>FY2016—FY2026</span></div>
-    <div class="masthead-row"><a class="masthead" href="./index.html">Brooklyn Asks</a><p class="masthead-kicker">A public record of what the borough asked the city for.</p></div>
-    <nav class="primary-nav"><a href="./index.html">Archive</a><a href="./history.html">History</a><a href="./contribute.html">Contribute</a><a href="./legal.html">Legal</a></nav>
+    <div class="utility-row"><span>THE DECADE</span><span>BROOKLYN, NEW YORK</span><span>FY2016—FY2026</span></div>
+    <div class="masthead-row"><a class="masthead" href="./index.html">Brooklyn Asks</a><p class="masthead-kicker">A neighborhood memory of what Brooklyn asked the city to fix.</p></div>
+    <nav class="primary-nav"><a href="./index.html">Issues</a><a href="./history.html">Decade</a><a href="./contribute.html">Contribute</a><a href="./legal.html">Legal</a></nav>
   </header>
   <main>
     <section class="intro">
-      <p class="section-label">A DECADE OF PUBLIC RECORD</p>
-      <h1>What kept coming back?</h1>
-      <p class="dek">Official Brooklyn Community District Needs sources are now indexed for every fiscal year from <strong>FY2016 through FY2026</strong>. Normalized request-level extraction is deeper in some years than others, and that distinction stays visible.</p>
+      <p class="section-label">TEN YEARS OF WHAT WOULDN’T GO AWAY</p>
+      <h1>Which neighborhood problems kept coming back?</h1>
+      <p class="dek">A single request can be easy to ignore. The same issue appearing again and again is harder to miss. Explore a decade of what Brooklyn neighborhoods formally raised — and see where the pattern starts to repeat.</p>
+    </section>
+
+    <section class="history-value" aria-label="Why the decade view matters">
+      <div><p class="section-label">WHY LOOK ACROSS YEARS?</p><h2>Because persistence changes the story.</h2></div>
+      <p><strong>Brooklyn Asks connects scattered annual records into one timeline.</strong> That makes it easier to spot recurring flooding, transit, park, school, housing, safety and infrastructure concerns instead of reading each year in isolation.</p>
     </section>
 
     <section class="decade-block" aria-labelledby="decade-title">
-      <div class="decade-head"><div><p class="section-label">SOURCE COVERAGE</p><h2 id="decade-title">2016 → 2026, without a missing year.</h2></div><p>Blue-topped years already contain extracted request records in Brooklyn Asks. Other years have official NYC Planning source sets indexed and are awaiting granular extraction.</p></div>
-      <div id="coverageTimeline" class="coverage-timeline" aria-label="Fiscal year source coverage"></div>
-      <p class="coverage-key">SOURCE COVERAGE ≠ COMPLETE EXTRACTION. Every year links back to its official source archive.</p>
+      <div class="decade-head"><div><p class="section-label">PICK A YEAR</p><h2 id="decade-title">2016 → 2026</h2></div><p>Years with searchable issues can be explored below now. For the others, the official records have been located and are being turned into searchable entries.</p></div>
+      <div id="coverageTimeline" class="coverage-timeline" aria-label="Fiscal year availability"></div>
+      <p class="coverage-key">Every year links back to its official NYC source. “Searchable” means request-level records are already available in Brooklyn Asks; it does not mean every record for that year has been extracted yet.</p>
     </section>
 
-    <section class="filters history-controls" aria-label="Historical filters">
-      <div class="filter-field"><label for="historyBoard">BOARD</label><select id="historyBoard"><option value="all">All extracted boards</option></select></div>
-      <div class="filter-field"><label for="historyYear">FISCAL YEAR</label><select id="historyYear"><option value="all">FY2016–FY2026</option></select></div>
-      <div class="filter-field"><label for="historySearch">SEARCH EXTRACTED RECORDS</label><input id="historySearch" class="history-search" type="search" placeholder="housing, parks, transit…" /></div>
+    <section class="plain-key" aria-label="How to read the decade">
+      <div><strong>SEARCHABLE ISSUES</strong><span>You can browse individual neighborhood asks for that year now.</span></div>
+      <div><strong>OFFICIAL RECORDS FOUND</strong><span>The source documents are located; detailed browsing is still being added.</span></div>
+      <div><strong>STILL COMING BACK</strong><span>A similar issue appears for the same board in more than one fiscal year.</span></div>
+    </section>
+
+    <section class="filters history-controls" aria-label="Search the decade">
+      <div class="filter-field"><label for="historySearch">SEARCH A PROBLEM</label><input id="historySearch" class="history-search" type="search" placeholder="flooding, schools, parks, housing…" /></div>
+      <div class="filter-field"><label for="historyYear">YEAR</label><select id="historyYear"><option value="all">All years · FY2016–FY2026</option></select></div>
+      <div class="filter-field"><label for="historyBoard">NEIGHBORHOOD BOARD</label><select id="historyBoard"><option value="all">All searchable boards</option></select></div>
     </section>
 
     <section class="view-panel">
-      <header class="section-head"><div><p class="section-label">THE HISTORICAL FILE</p><h2 id="historyTitle">Indexed records</h2></div><p id="historyMeta">Loading…</p></header>
+      <header class="section-head"><div><p class="section-label">WHAT THE RECORD SHOWS</p><h2 id="historyTitle">Issues across the decade</h2></div><p id="historyMeta">Loading…</p></header>
       <div id="historyResults" class="history-results"></div>
     </section>
 
     <section class="methodology compact-method">
-      <header class="section-head"><div><p class="section-label">COVERAGE NOTE</p><h2>Source-backed does not mean fully extracted.</h2></div></header>
+      <header class="section-head"><div><p class="section-label">READ THIS CAREFULLY</p><h2>Coming back is a signal, not a verdict.</h2></div></header>
       <div class="method-grid">
-        <article><span class="method-no">01</span><h3>Continuous sources</h3><p>Brooklyn Asks has located official NYC Planning / Community District Needs source sets for every fiscal year from FY2016 through FY2026.</p></article>
-        <article><span class="method-no">02</span><h3>No invented records</h3><p>A year can be source-indexed before its individual requests are normalized. We show that state explicitly rather than generating missing fields.</p></article>
-        <article><span class="method-no">03</span><h3>Request extraction grows</h3><p>Granular records are added only with fiscal-year, board and source provenance. Agency responses are never inferred when the source does not provide them.</p></article>
+        <article><span class="method-no">01</span><h3>Formal neighborhood record</h3><p>These records capture issues Community Boards formally raised with the city. They do not represent every concern residents had.</p></article>
+        <article><span class="method-no">02</span><h3>No invented outcomes</h3><p>If a historical source does not include an agency response or verified outcome, Brooklyn Asks does not infer one.</p></article>
+        <article><span class="method-no">03</span><h3>Persistence needs context</h3><p>The same issue returning can reflect an unresolved problem, a long project, recurring maintenance, or changing scope. Open the source before drawing stronger conclusions.</p></article>
       </div>
     </section>
   </main>
   <script src="./history.js" defer></script>
+  <script src="./clarity.js" defer></script>
 </body>
 </html>
