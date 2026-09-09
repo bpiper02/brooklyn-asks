@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#eee7d8" />
+  <meta name="description" content="Historical Brooklyn Community Board request coverage in Brooklyn Asks." />
+  <title>Historical Coverage — Brooklyn Asks</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./hooky.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="utility-row"><span>HISTORICAL EDITION</span><span>BROOKLYN, NEW YORK</span><span>SOURCED RECORDS</span></div>
+    <div class="masthead-row"><a class="masthead" href="./index.html">Brooklyn Asks</a><p class="masthead-kicker">A public record of what the borough asked the city for.</p></div>
+    <nav class="primary-nav"><a href="./index.html">Archive</a><a href="./history.html">History</a><a href="./contribute.html">Contribute</a><a href="./legal.html">Legal</a></nav>
+  </header>
+  <main>
+    <section class="intro">
+      <p class="section-label">HISTORICAL COVERAGE</p>
+      <h1>What kept coming back?</h1>
+      <p class="dek">A growing, source-linked archive of older Community Board requests. Historical coverage is intentionally labeled by year and board; absence here does not mean a board made no request.</p>
+    </section>
+
+    <section class="filters history-controls" aria-label="Historical filters">
+      <div class="filter-field"><label for="historyBoard">BOARD</label><select id="historyBoard"><option value="all">All indexed boards</option></select></div>
+      <div class="filter-field"><label for="historyYear">FISCAL YEAR</label><select id="historyYear"><option value="all">All indexed years</option></select></div>
+      <div class="filter-field"><label for="historySearch">SEARCH</label><input id="historySearch" class="history-search" type="search" placeholder="housing, parks, transit…" /></div>
+    </section>
+
+    <section class="view-panel">
+      <header class="section-head"><div><p class="section-label">THE HISTORICAL FILE</p><h2 id="historyTitle">Indexed records</h2></div><p id="historyMeta">Loading…</p></header>
+      <div id="historyResults" class="history-results"></div>
+    </section>
+
+    <section class="methodology compact-method">
+      <header class="section-head"><div><p class="section-label">COVERAGE NOTE</p><h2>Historical does not mean complete.</h2></div></header>
+      <div class="method-grid">
+        <article><span class="method-no">01</span><h3>Official documents</h3><p>Historical records are transcribed from official Community District Needs statements and budget-request documents, with source URLs retained.</p></article>
+        <article><span class="method-no">02</span><h3>No invented response</h3><p>If the historical source does not include an agency response, Brooklyn Asks says so rather than inferring one.</p></article>
+        <article><span class="method-no">03</span><h3>Coverage grows</h3><p>The goal is to expand board-by-board and year-by-year while keeping provenance visible on every record.</p></article>
+      </div>
+    </section>
+  </main>
+  <script src="./history.js" defer></script>
+</body>
+</html>
