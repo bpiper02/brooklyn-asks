@@ -40,10 +40,12 @@
 .map-loading{min-height:690px;display:grid;place-items:center;color:var(--muted);font:800 11px/1.3 "Courier New",monospace;letter-spacing:.06em;text-transform:uppercase}
 .atlas-kicker{display:none}
 .atlas-district{stroke:#292b29!important;stroke-width:1.15!important;filter:drop-shadow(0 1px .5px rgba(25,24,21,.2));transition:filter .16s ease,stroke-width .16s ease,stroke .16s ease,fill-opacity .16s ease}
-.atlas-district:hover,.atlas-district.is-key-hover{stroke:var(--red)!important;stroke-width:2!important;filter:drop-shadow(0 4px 3px rgba(35,29,23,.28))}
+.atlas-district:hover,.atlas-district.is-key-hover{stroke:#315b6d!important;stroke-width:2!important;filter:drop-shadow(0 4px 3px rgba(35,29,23,.24))}
 .atlas-district.is-selected{stroke:var(--red)!important;stroke-width:2.7!important;filter:drop-shadow(0 7px 5px rgba(35,29,23,.34))}
 .board-accent-dot{display:none}
-.atlas-label{font:800 11.5px/1 Arial,Helvetica,sans-serif!important;letter-spacing:.055em;stroke-width:4px!important;stroke:#f7f2e8!important;paint-order:stroke;stroke-linejoin:round;fill:#171715!important}
+.atlas-label{font:800 11.5px/1 Arial,Helvetica,sans-serif!important;letter-spacing:.055em;stroke-width:4px!important;stroke:#f7f2e8!important;paint-order:stroke;stroke-linejoin:round;fill:#171715!important;transition:fill .14s ease,font-size .14s ease}
+.atlas-label.is-label-hovered{fill:#315b6d!important;font-size:12px!important}
+.atlas-label.is-label-selected{fill:var(--red)!important;font-size:12.4px!important}
 .atlas-neighborhood-label{display:none!important}
 .category-dot{fill:#f7f2e8!important;stroke-width:1.2!important;opacity:0;transition:opacity .14s ease}
 .category-glyph{display:none!important}
@@ -58,10 +60,12 @@
 .board-directory-head>span{display:block;margin-top:5px;color:var(--muted);font:9px/1.25 "Courier New",monospace;text-transform:uppercase;letter-spacing:.04em}
 .board-directory-loading{margin:0;padding:14px;color:var(--muted);font:10px/1.35 "Courier New",monospace}
 .board-directory-list{display:block}
-.board-directory-row{width:100%;min-height:31px;display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px;align-items:center;padding:6px 10px;border:0;border-bottom:1px solid rgba(143,136,121,.34);border-radius:0;background:transparent;color:var(--ink);text-align:left;transition:background .12s ease,color .12s ease,padding-left .12s ease}
+.board-directory-row{width:100%;min-height:31px;display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px;align-items:center;padding:6px 10px;border:0;border-bottom:1px solid rgba(143,136,121,.34);border-radius:0;background:transparent;color:var(--ink);text-align:left;cursor:pointer;transition:background .12s ease,color .12s ease,padding-left .12s ease,box-shadow .12s ease}
 .board-directory-row:last-child{border-bottom:0}
-.board-directory-row:hover,.board-directory-row.is-hovered{background:#e0e5e1;padding-left:13px}
-.board-directory-row.is-active{background:var(--navy);color:#f8f3e9}
+.board-directory-row:hover,.board-directory-row.is-hovered{background:#dfe6e2;padding-left:13px}
+.board-directory-row.is-active{background:var(--navy);color:#f8f3e9;box-shadow:inset 4px 0 var(--red)}
+.board-directory-row.is-active:hover{background:var(--navy);padding-left:10px}
+.board-directory-row.is-active .board-key-name{font-weight:800}
 .board-key-no{font:800 11px/1 "Courier New",monospace;letter-spacing:.05em}
 .board-key-name{font:700 11px/1.2 Arial,Helvetica,sans-serif}
 
