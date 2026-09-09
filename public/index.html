@@ -23,6 +23,8 @@
     <nav class="primary-nav" aria-label="Primary navigation">
       <button class="nav-tab is-active" data-view="archive" type="button">Archive</button>
       <button class="nav-tab" data-view="map" type="button">Map</button>
+      <a href="./history.html">History</a>
+      <a href="./contribute.html">Contribute</a>
       <a href="#methodology">Method</a>
       <a href="https://data.cityofnewyork.us/d/vn4m-mk4t" target="_blank" rel="noopener noreferrer">NYC source ↗</a>
     </nav>
@@ -53,13 +55,24 @@
         <span class="live-mark" aria-hidden="true"></span>
         <span id="sourceStatus">Loading NYC Open Data…</span>
       </div>
+
+      <div class="share-strip" aria-label="Share Brooklyn Asks">
+        <strong>SHARE THE RECORD</strong>
+        <button type="button" data-share="native">Share</button>
+        <button type="button" data-share="copy">Copy link</button>
+        <a data-share="x" href="#">X</a>
+        <a data-share="linkedin" href="#">LinkedIn</a>
+        <a data-share="whatsapp" href="#">WhatsApp</a>
+        <a data-share="email" href="#">Email</a>
+        <span id="shareStatus" aria-live="polite"></span>
+      </div>
     </section>
 
     <section class="ledger" aria-label="Dataset summary">
-      <article><span class="ledger-label">REQUESTS INDEXED</span><strong id="requestCount">—</strong></article>
-      <article><span class="ledger-label">COMMUNITY BOARDS</span><strong id="boardCount">18</strong></article>
-      <article><span class="ledger-label">RECURRING ASKS</span><strong id="repeatCount">—</strong></article>
-      <article><span class="ledger-label">SOURCE FRESHNESS</span><strong id="latestDate">—</strong></article>
+      <article><span class="ledger-label">CURRENT RECORDS</span><strong id="requestCount">—</strong></article>
+      <article><span class="ledger-label">BROOKLYN BOARDS</span><strong id="boardCount">18</strong></article>
+      <article><span class="ledger-label">RECURRING THEMES</span><strong id="repeatCount">—</strong></article>
+      <article><span class="ledger-label">LATEST SOURCE</span><strong id="latestDate">—</strong></article>
     </section>
 
     <section class="filters" aria-label="Filter requests">
@@ -154,6 +167,16 @@
       </div>
       <p class="fineprint">Unofficial public-interest reading aid. Open the cited NYC source for authoritative wording. Derived labels are designed to make the record easier to inspect, not to replace the underlying record.</p>
     </section>
+
+    <footer class="site-footer">
+      <p><strong>Brooklyn Asks</strong> is an independent, unofficial public-interest project.</p>
+      <nav aria-label="Footer">
+        <a href="./history.html">Historical coverage</a>
+        <a href="./contribute.html">Feedback & contribute</a>
+        <a href="./legal.html">Legal / privacy</a>
+        <a href="https://github.com/bpiper02/brooklyn-asks" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+      </nav>
+    </footer>
   </main>
 
   <template id="requestTemplate">
@@ -190,5 +213,6 @@
   </template>
 
   <script type="module" src="./app.js"></script>
+  <script src="./share.js" defer></script>
 </body>
 </html>
