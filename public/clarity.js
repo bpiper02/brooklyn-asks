@@ -43,30 +43,12 @@
     }
   }
 
-  function enhanceHistory() {
-    document.querySelectorAll('.coverage-year').forEach(card => {
-      const span = card.querySelector('span');
-      if (!span) return;
-      if (/extracted/i.test(span.textContent)) setText(span,span.textContent.replace(/extracted/i,'searchable issues'));
-      if (/source indexed/i.test(span.textContent)) setText(span,'official records found');
-    });
-    document.querySelectorAll('.source-year-card').forEach(card => {
-      card.querySelectorAll('.section-label').forEach(el => {
-        const next = el.textContent.replace(/SOURCE INDEXED/i,'OFFICIAL RECORDS FOUND').replace(/PARTIAL EXTRACTION/i,'SEARCHABLE NOW');
-        setText(el,next);
-      });
-      setText(card.querySelector('h3'),'The official records are here. Detailed browsing is coming next.');
-    });
-  }
-
-  function enhanceAll(){ enhanceArchive(); enhanceHistory(); }
   let queued = false;
   const observer = new MutationObserver(() => {
     if (queued) return;
     queued = true;
-    requestAnimationFrame(() => { queued = false; enhanceAll(); });
+    requestAnimationFrame(() => { queued = false; enhanceArchive(); });
   });
   observer.observe(document.documentElement,{childList:true,subtree:true});
-  document.addEventListener('change', () => setTimeout(enhanceAll,0));
-  window.addEventListener('load', enhanceAll);
+  window.addEventListener('load', enhanceArchive);
 })();
