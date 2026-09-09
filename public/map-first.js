@@ -30,7 +30,6 @@
   const SVG_NS = 'http://www.w3.org/2000/svg';
   let scheduled = false;
   let mapStarted = false;
-  let readinessObserver = null;
 
   function setText(el, value) {
     if (el && el.textContent !== value) el.textContent = value;
@@ -165,28 +164,8 @@
   function activateMapOnce() {
     if (mapStarted) return;
     mapStarted = true;
-    readinessObserver?.disconnect();
-    readinessObserver = null;
     const mapButton = [...document.querySelectorAll('.nav-tab')].find(button => button.dataset.view === 'map');
     mapButton?.click();
-  }
-
-  function startWhenDataReady() {
-    showStartupMessage();
-    const status = document.querySelector('#sourceStatus');
-    if (!status) {
-      window.setTimeout(startWhenDataReady, 50);
-      return;
-    }
-    const ready = () => !/^loading/i.test((status.textContent || '').trim());
-    if (ready()) {
-      activateMapOnce();
-      return;
-    }
-    readinessObserver = new MutationObserver(() => {
-      if (ready()) activateMapOnce();
-    });
-    readinessObserver.observe(status,{subtree:true,childList:true,characterData:true});
   }
 
   function refresh() {
@@ -207,7 +186,8 @@
   observer.observe(document.documentElement,{subtree:true,childList:true});
   document.addEventListener('change',scheduleRefresh);
   window.addEventListener('DOMContentLoaded',() => {
-    startWhenDataReady();
+    showStartupMessage();
+    activateMapOnce();
     scheduleRefresh();
   });
 })();
