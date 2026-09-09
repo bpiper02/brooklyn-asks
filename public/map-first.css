@@ -39,15 +39,15 @@
 .atlas-svg{height:690px!important;filter:drop-shadow(0 4px 8px rgba(41,37,31,.08))}
 .map-loading{min-height:690px;display:grid;place-items:center;color:var(--muted);font:800 11px/1.3 "Courier New",monospace;letter-spacing:.06em;text-transform:uppercase}
 .atlas-kicker{display:none}
-.atlas-district{stroke:#292b29!important;stroke-width:1.15!important;filter:drop-shadow(0 1px .5px rgba(25,24,21,.2));transition:filter .16s ease,stroke-width .16s ease,stroke .16s ease,fill-opacity .16s ease}
-.atlas-district:hover,.atlas-district.is-key-hover{stroke:#315b6d!important;stroke-width:2!important;filter:drop-shadow(0 4px 3px rgba(35,29,23,.24))}
+.atlas-district{cursor:pointer;stroke:#292b29!important;stroke-width:1.15!important;filter:drop-shadow(0 1px .5px rgba(25,24,21,.2));transition:filter .16s ease,stroke-width .16s ease,stroke .16s ease,fill-opacity .16s ease}
+.atlas-district:hover,.atlas-district.is-key-hover,.atlas-district:focus-visible{outline:none;stroke:#315b6d!important;stroke-width:2!important;filter:drop-shadow(0 4px 3px rgba(35,29,23,.24))}
 .atlas-district.is-selected{stroke:var(--red)!important;stroke-width:2.7!important;filter:drop-shadow(0 7px 5px rgba(35,29,23,.34))}
 .board-accent-dot{display:none}
-.atlas-label{font:800 11.5px/1 Arial,Helvetica,sans-serif!important;letter-spacing:.055em;stroke-width:4px!important;stroke:#f7f2e8!important;paint-order:stroke;stroke-linejoin:round;fill:#171715!important;transition:fill .14s ease,font-size .14s ease}
+.atlas-label{pointer-events:none;font:800 11.5px/1 Arial,Helvetica,sans-serif!important;letter-spacing:.055em;stroke-width:4px!important;stroke:#f7f2e8!important;paint-order:stroke;stroke-linejoin:round;fill:#171715!important;transition:fill .14s ease,font-size .14s ease}
 .atlas-label.is-label-hovered{fill:#315b6d!important;font-size:12px!important}
 .atlas-label.is-label-selected{fill:var(--red)!important;font-size:12.4px!important}
 .atlas-neighborhood-label{display:none!important}
-.category-dot{fill:#f7f2e8!important;stroke-width:1.2!important;opacity:0;transition:opacity .14s ease}
+.category-dot{pointer-events:none;fill:#f7f2e8!important;stroke-width:1.2!important;opacity:0;transition:opacity .14s ease}
 .category-glyph{display:none!important}
 .map-topic-icon{pointer-events:none;opacity:0;transition:opacity .14s ease}
 .category-dot.is-topic-visible,.map-topic-icon.is-topic-visible{opacity:1}
@@ -66,6 +66,7 @@
 .board-directory-row.is-active{background:var(--navy);color:#f8f3e9;box-shadow:inset 4px 0 var(--red)}
 .board-directory-row.is-active:hover{background:var(--navy);padding-left:10px}
 .board-directory-row.is-active .board-key-name{font-weight:800}
+.board-directory-row:focus-visible{outline:2px solid var(--red);outline-offset:-3px;position:relative;z-index:1}
 .board-key-no{font:800 11px/1 "Courier New",monospace;letter-spacing:.05em}
 .board-key-name{font:700 11px/1.2 Arial,Helvetica,sans-serif}
 
