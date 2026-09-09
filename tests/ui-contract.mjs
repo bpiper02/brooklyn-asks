@@ -46,11 +46,14 @@ assert.match(mapJs, /root\.addEventListener\('click', prepareSelection, true\)/,
 assert.match(mapJs, /select\.dispatchEvent\(new Event\('change',\{bubbles:true\}\)\)/, 'Selection must update the rest of the filtered UI');
 assert.match(mapJs, /filterValue && filterValue !== 'all'/, 'Neighborhood filter must be the primary visible selected-board source');
 assert.match(mapJs, /const contextBoard = hoverBoard \|\| selected/, 'Topic icons must preview only one board at a time');
-assert.match(mapCss, /\.atlas-district:hover,\.atlas-district\.is-key-hover\{stroke:#315b6d!important/, 'Hover must look different from persistent selection');
+assert.match(mapCss, /\.atlas-district:hover,\.atlas-district\.is-key-hover,\.atlas-district:focus-visible\{[^}]*stroke:#315b6d!important/, 'Hover and keyboard focus must look different from persistent selection');
 assert.match(mapCss, /\.atlas-district\.is-selected\{stroke:var\(--red\)!important/, 'Persistent selected board must retain a distinct map state');
 assert.match(mapCss, /\.board-directory-row\.is-active\{[^}]*box-shadow:inset 4px 0 var\(--red\)/, 'Active board-key row must be visually unmistakable');
 assert.match(mapCss, /\.atlas-label\.is-label-selected/, 'Selected map label must receive its own stronger state');
 assert.match(mapJs, /activeRow\?\.scrollIntoView\(\{block:'nearest'\}\)/, 'Selecting a board must keep the matching key row visible');
 assert.match(mapJs, /selectedBoardName\(\)/, 'Map heading should reflect the selected neighborhood');
+assert.match(mapCss, /\.atlas-label\{pointer-events:none;/, 'Visible board labels must not steal clicks from district polygons');
+assert.match(mapCss, /\.category-dot\{pointer-events:none;/, 'Topic dots must not steal clicks from district polygons');
+assert.match(mapCss, /\.board-directory-row:focus-visible/, 'Board key must expose a visible keyboard focus state');
 
 console.log('ui contract tests passed');
