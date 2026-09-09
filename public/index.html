@@ -69,7 +69,7 @@
     </section>
 
     <section class="ledger" aria-label="Dataset summary">
-      <article><span class="ledger-label">CURRENT RECORDS</span><strong id="requestCount">—</strong></article>
+      <article><span class="ledger-label">MATCHING RECORDS</span><strong id="requestCount">—</strong></article>
       <article><span class="ledger-label">BROOKLYN BOARDS</span><strong id="boardCount">18</strong></article>
       <article><span class="ledger-label">RECURRING THEMES</span><strong id="repeatCount">—</strong></article>
       <article><span class="ledger-label">LATEST SOURCE</span><strong id="latestDate">—</strong></article>
@@ -77,8 +77,28 @@
 
     <section class="filters" aria-label="Filter requests">
       <div class="filter-field">
-        <label for="boardFilter">BOARD</label>
+        <label for="yearFilter">FISCAL YEAR</label>
+        <select id="yearFilter"><option value="all">FY 2016–2026</option></select>
+      </div>
+      <div class="filter-field">
+        <label for="boardFilter">BOARD / NEIGHBORHOOD</label>
         <select id="boardFilter"><option value="all">All Brooklyn boards</option></select>
+      </div>
+      <div class="filter-field">
+        <label for="categoryFilter">TOPIC</label>
+        <select id="categoryFilter">
+          <option value="all">All topics</option>
+          <option value="transit">Transit</option>
+          <option value="housing">Housing</option>
+          <option value="parks">Parks</option>
+          <option value="schools">Schools</option>
+          <option value="safety">Public safety</option>
+          <option value="health">Health</option>
+          <option value="infrastructure">Infrastructure</option>
+          <option value="accessibility">Accessibility</option>
+          <option value="services">Community services</option>
+          <option value="other">Other</option>
+        </select>
       </div>
       <div class="filter-field">
         <label for="statusFilter">AGENCY RESPONSE</label>
@@ -114,28 +134,43 @@
     </section>
 
     <section id="mapView" class="view-panel" hidden>
-      <header class="section-head">
+      <header class="section-head map-heading">
         <div>
-          <p class="section-label">THE MAP</p>
-          <h2>Where are the asks coming from?</h2>
+          <p class="section-label">THE DECADE MAP</p>
+          <h2 id="mapTitle">Brooklyn asks, year by year.</h2>
         </div>
-        <p>Community District shading reflects matching records, not need severity.</p>
+        <p id="mapCoverageNote">Community District shading reflects the selected metric, not need severity.</p>
       </header>
+
+      <div class="map-toolbar" aria-label="Map display controls">
+        <div class="filter-field">
+          <label for="mapColorBy">COLOR BY</label>
+          <select id="mapColorBy">
+            <option value="volume">Request volume</option>
+            <option value="recurring">Recurring asks</option>
+            <option value="uncertain">Funding unclear</option>
+          </select>
+        </div>
+        <div class="map-year-readout"><span>VIEWING</span><strong id="mapYearReadout">FY 2016–2026</strong></div>
+        <div id="categoryLegend" class="category-legend" aria-label="Map topic legend"></div>
+      </div>
 
       <div class="map-layout">
         <div class="map-frame">
           <div id="boardMap" class="atlas-map" role="img" aria-label="Interactive atlas of Brooklyn community districts"></div>
           <div class="map-legend">
-            <span>FEWER RECORDS</span>
+            <span>LOWER</span>
             <span class="legend-ramp" aria-hidden="true"></span>
-            <span>MORE RECORDS</span>
+            <span>HIGHER</span>
+            <strong id="legendMetric">REQUEST VOLUME</strong>
           </div>
-          <p class="map-source">District boundaries: NYC Department of City Planning. Atlas shading reflects matching record count. Click a district for its record brief.</p>
+          <p class="map-source">District boundaries: NYC Department of City Planning. Neighborhood labels follow NYC Community Boards’ published district descriptions. Click a district for its record brief.</p>
         </div>
         <aside id="mapDossier" class="map-dossier" aria-live="polite">
           <p class="section-label">BOARD DOSSIER</p>
           <h3>Brooklyn-wide</h3>
-          <p class="dossier-intro">Choose a Community District on the map to inspect its request volume, recurring themes, agencies, and response mix.</p>
+          <p id="dossierNeighborhoods" class="dossier-neighborhoods"></p>
+          <p class="dossier-intro">Choose a Community District on the map to inspect its request volume, recurring themes, agencies, categories, and response mix.</p>
           <div id="dossierBody"></div>
         </aside>
       </div>
