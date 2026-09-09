@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#eee7d8" />
-  <meta name="description" content="Explore the Brooklyn neighborhood problems that kept coming back, what city agencies said, and how priorities changed across a decade." />
+  <meta name="description" content="See which Brooklyn neighborhood problems kept coming back, where they showed up, and what city agencies said." />
   <title>Brooklyn Asks — What keeps coming back?</title>
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./hooky.css" />
@@ -20,30 +20,28 @@
     </div>
     <div class="masthead-row">
       <a class="masthead" href="#top" aria-label="Brooklyn Asks home">Brooklyn Asks</a>
-      <p class="masthead-kicker">A memory of what Brooklyn asked the city to fix.</p>
+      <p class="masthead-kicker">What Brooklyn kept asking the city to fix.</p>
     </div>
     <nav class="primary-nav" aria-label="Primary navigation">
-      <button class="nav-tab" data-view="archive" type="button">Records</button>
       <button class="nav-tab is-active" data-view="map" type="button">Explore</button>
+      <button class="nav-tab" data-view="archive" type="button">Records</button>
       <a href="./history.html">Decade</a>
       <a href="./contribute.html">Contribute</a>
-      <a href="#methodology">How it works</a>
       <a href="https://data.cityofnewyork.us/d/vn4m-mk4t" target="_blank" rel="noopener noreferrer">NYC source ↗</a>
     </nav>
   </header>
 
   <main id="top">
     <section class="map-first-hero" aria-labelledby="page-title">
-      <p class="section-label">WHAT BROOKLYN KEEPS LIVING WITH</p>
+      <p class="section-label">BROOKLYN, OVER TIME</p>
       <h1 id="page-title">What keeps coming back in your neighborhood?</h1>
-      <p class="dek">Same problem. Different year. See what Brooklyn neighborhoods kept asking the city to fix and what the city said back.</p>
-      <p class="map-first-hook">Pick a place, year, or issue. The map does the rest.</p>
+      <p class="dek">Same problem. Different year. See what kept coming back, where, and what the city said.</p>
     </section>
 
     <section class="explore-controls" aria-label="Explore Brooklyn neighborhood issues">
       <label class="search-field" for="search">
         <span>SEARCH</span>
-        <input id="search" type="search" autocomplete="off" placeholder="Try flooding, parks, crossings, schools, housing..." />
+        <input id="search" type="search" autocomplete="off" placeholder="Flooding, parks, crossings, schools, housing..." />
       </label>
       <button id="clearSearch" class="text-button" type="button" hidden>Clear</button>
       <div class="filter-field">
@@ -84,20 +82,20 @@
         </select>
       </div>
     </section>
+
     <div class="explore-options">
-      <label class="check-field"><input id="repeatOnly" type="checkbox" /> <span>Only show issues that came back</span></label>
-      <span class="sort-note">Repeated issues show first</span>
+      <label class="check-field"><input id="repeatOnly" type="checkbox" /> <span>Only issues that came back</span></label>
+      <span class="sort-note">Repeated issues first</span>
     </div>
 
     <section id="mapView" class="view-panel">
-      <header class="section-head map-heading">
+      <div class="map-summary-bar">
         <div>
-          <p class="section-label">EXPLORE THE CITY'S MEMORY</p>
+          <p class="section-label">EXPLORE THE MAP</p>
           <h2 id="mapTitle">Where does Brooklyn keep getting stuck?</h2>
         </div>
-        <p id="mapCoverageNote">Darker neighborhoods have more matching issues in this view.</p>
-      </header>
-      <p class="map-explainer"><strong>How to read it:</strong> darker areas mean more matching issues. The icons show the most common issue types. Click a neighborhood for the details.</p>
+        <p id="mapCoverageNote">Darker areas have more matching issues.</p>
+      </div>
 
       <div class="map-toolbar" aria-label="Map display controls">
         <div class="filter-field">
@@ -121,14 +119,14 @@
             <span>MORE</span>
             <strong id="legendMetric">ISSUES RAISED</strong>
           </div>
-          <p class="map-source">Boundaries come from NYC Planning. Neighborhood names follow Community Board district descriptions. Shading shows the selected record count, not how serious a neighborhood's needs are.</p>
+          <p class="map-source">Darker means more matching records. Click a neighborhood for details. Boundaries: NYC Planning.</p>
         </div>
 
         <aside id="mapDossier" class="map-dossier" aria-live="polite">
           <p class="section-label">NEIGHBORHOOD BRIEF</p>
-          <h3>Brooklyn wide</h3>
+          <h3>Pick a neighborhood</h3>
           <p id="dossierNeighborhoods" class="dossier-neighborhoods"></p>
-          <p class="dossier-intro">Click a neighborhood to see what it raised, what came back, who responded, and what the city said.</p>
+          <p class="dossier-intro">Click the map for a quick local brief.</p>
           <div id="dossierBody"></div>
         </aside>
       </div>
@@ -136,16 +134,11 @@
 
     <section class="post-map-tools" aria-label="About this view">
       <section class="ledger" aria-label="Current view summary">
-        <article><span class="ledger-label">ISSUES IN THIS VIEW</span><strong id="requestCount">—</strong></article>
-        <article><span class="ledger-label">NEIGHBORHOOD BOARDS</span><strong id="boardCount">18</strong></article>
-        <article><span class="ledger-label">ISSUES THAT CAME BACK</span><strong id="repeatCount">—</strong></article>
-        <article><span class="ledger-label">LATEST CITY UPDATE</span><strong id="latestDate">—</strong></article>
+        <article><span class="ledger-label">ISSUES IN VIEW</span><strong id="requestCount">—</strong></article>
+        <article><span class="ledger-label">BOARDS</span><strong id="boardCount">18</strong></article>
+        <article><span class="ledger-label">CAME BACK</span><strong id="repeatCount">—</strong></article>
+        <article><span class="ledger-label">LATEST UPDATE</span><strong id="latestDate">—</strong></article>
       </section>
-      <div class="quick-read">
-        <div><strong>BOARD RANK</strong><span>How highly that Community Board ranked the issue that year.</span></div>
-        <div><strong>WHAT THE CITY SAID</strong><span>The agency's published response. Support does not guarantee money or completion.</span></div>
-        <div><strong>CAME BACK</strong><span>A similar issue appeared for that board in more than one year.</span></div>
-      </div>
       <div class="secondary-tools">
         <div class="live-line" role="status"><span class="live-mark" aria-hidden="true"></span><span id="sourceStatus">Loading official NYC records…</span></div>
         <div class="share-strip" aria-label="Share Brooklyn Asks">
@@ -166,32 +159,21 @@
         <div><p class="section-label">THE RECORDS</p><h2 id="resultsTitle">Brooklyn wide</h2></div>
         <p id="resultMeta">—</p>
       </header>
-      <p class="archive-intro">These are the city records behind the map. Open any item to read the agency response and original source.</p>
       <div class="archive-columns" aria-hidden="true"><span>NEIGHBORHOOD / YEAR</span><span>ISSUE</span><span>AGENCY / CITY RESPONSE</span></div>
       <section id="results" class="results" aria-live="polite"></section>
       <button id="loadMore" class="load-more" type="button" hidden>Show more</button>
     </section>
 
-    <section id="methodology" class="methodology">
-      <header class="section-head"><div><p class="section-label">HOW IT WORKS</p><h2>What the records can tell you.</h2></div></header>
-      <div class="method-grid">
-        <article><span class="method-no">01</span><h3>The neighborhood raised it</h3><p>Community Board requests show what a district formally asked the city to address.</p></article>
-        <article><span class="method-no">02</span><h3>The city answered</h3><p>An agency response tells you what the city said. It does not automatically prove a project was funded or finished.</p></article>
-        <article><span class="method-no">03</span><h3>It came back</h3><p>A similar issue appearing again is a sign of persistence. It is not automatic proof that nothing happened.</p></article>
-      </div>
-      <p class="fineprint">Brooklyn Asks is an unofficial reading tool. Every record links back to the official NYC source.</p>
-    </section>
-
     <footer class="site-footer">
-      <p><strong>Brooklyn Asks</strong> is an independent public project.</p>
-      <nav aria-label="Footer"><a href="./history.html">Explore the decade</a><a href="./contribute.html">Feedback and contribute</a><a href="./legal.html">Legal and privacy</a><a href="https://github.com/bpiper02/brooklyn-asks" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
+      <p><strong>Brooklyn Asks</strong> uses official NYC records. <a href="./legal.html">Read the notes.</a></p>
+      <nav aria-label="Footer"><a href="./history.html">Decade</a><a href="./contribute.html">Feedback</a><a href="./legal.html">Legal and privacy</a><a href="https://github.com/bpiper02/brooklyn-asks" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
     </footer>
   </main>
 
   <template id="requestTemplate">
     <article class="record-row">
       <div class="record-index"><strong class="board-code"></strong><span class="year"></span><span class="repeat-mark" hidden></span></div>
-      <div class="record-main"><h3 class="request-title"></h3><p class="request-detail" hidden></p><details class="record-details"><summary>See the city response and official source</summary><div class="response-copy"><div class="response-rule"><span class="status-label"></span><span class="publication-date"></span></div><p class="response"></p><div class="source-strip"><span class="tracking"></span><a class="source-link" target="_blank" rel="noopener noreferrer">Open official record ↗</a></div></div></details></div>
+      <div class="record-main"><h3 class="request-title"></h3><p class="request-detail" hidden></p><details class="record-details"><summary>City response and source</summary><div class="response-copy"><div class="response-rule"><span class="status-label"></span><span class="publication-date"></span></div><p class="response"></p><div class="source-strip"><span class="tracking"></span><a class="source-link" target="_blank" rel="noopener noreferrer">Official record ↗</a></div></div></details></div>
       <div class="record-agency"><strong class="agency"></strong><span class="priority"></span><span class="status-short"></span></div>
     </article>
   </template>
