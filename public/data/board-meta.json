@@ -1,0 +1,20 @@
+[
+  {"board":1,"shortName":"Greenpoint / Williamsburg","neighborhoods":["Greenpoint","Williamsburg"],"accent":"#8b3f32"},
+  {"board":2,"shortName":"Downtown / Heights / Fort Greene","neighborhoods":["Downtown Brooklyn","Boerum Hill","Brooklyn Heights","Fulton Ferry","DUMBO","Vinegar Hill","Fort Greene","Clinton Hill","Brooklyn Navy Yard"],"accent":"#315b6d"},
+  {"board":3,"shortName":"Bed-Stuy / Stuyvesant Heights","neighborhoods":["Bedford-Stuyvesant","Stuyvesant Heights"],"accent":"#6d5a2f"},
+  {"board":4,"shortName":"Bushwick","neighborhoods":["Bushwick"],"accent":"#7a4d69"},
+  {"board":5,"shortName":"East New York / Cypress Hills","neighborhoods":["East New York","Cypress Hills","Highland Park","New Lots","City Line","Starrett City"],"accent":"#47623b"},
+  {"board":6,"shortName":"Park Slope / Red Hook / Gowanus","neighborhoods":["Red Hook","Carroll Gardens","Park Slope","Gowanus","Cobble Hill"],"accent":"#9a6235"},
+  {"board":7,"shortName":"Sunset Park / Windsor Terrace","neighborhoods":["Sunset Park","Windsor Terrace"],"accent":"#3e6d63"},
+  {"board":8,"shortName":"Crown Heights / Prospect Heights","neighborhoods":["Crown Heights","Prospect Heights","Weeksville"],"accent":"#7b3d46"},
+  {"board":9,"shortName":"Crown Heights / PLG / Wingate","neighborhoods":["Crown Heights","Prospect Lefferts Gardens","Wingate"],"accent":"#526c8b"},
+  {"board":10,"shortName":"Bay Ridge / Dyker Heights","neighborhoods":["Bay Ridge","Dyker Heights","Fort Hamilton"],"accent":"#6b6246"},
+  {"board":11,"shortName":"Bensonhurst / Bath Beach","neighborhoods":["Bath Beach","Gravesend","Mapleton","Bensonhurst"],"accent":"#8b5540"},
+  {"board":12,"shortName":"Boro Park / Kensington / Midwood","neighborhoods":["Boro Park","Kensington","Ocean Parkway","Midwood"],"accent":"#54705a"},
+  {"board":13,"shortName":"Coney Island / Brighton Beach","neighborhoods":["Coney Island","Brighton Beach","Bensonhurst","Gravesend","Seagate"],"accent":"#2f6475"},
+  {"board":14,"shortName":"Flatbush / Midwood","neighborhoods":["Flatbush","Midwood","Kensington","Ocean Parkway"],"accent":"#7b4d35"},
+  {"board":15,"shortName":"Sheepshead Bay / Manhattan Beach","neighborhoods":["Sheepshead Bay","Manhattan Beach","Kings Bay","Gerritsen Beach","Kings Highway","East Gravesend","Madison","Homecrest","Plum Beach"],"accent":"#456a76"},
+  {"board":16,"shortName":"Brownsville / Ocean Hill","neighborhoods":["Brownsville","Ocean Hill"],"accent":"#7a4b4b"},
+  {"board":17,"shortName":"East Flatbush / Remsen Village","neighborhoods":["East Flatbush","Remsen Village","Farragut","Rugby","Erasmus","Ditmas Village"],"accent":"#4c6575"},
+  {"board":18,"shortName":"Canarsie / Flatlands / Marine Park","neighborhoods":["Canarsie","Bergen Beach","Mill Basin","Flatlands","Marine Park","Georgetown","Mill Island"],"accent":"#596b3d"}
+]
