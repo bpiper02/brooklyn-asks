@@ -107,10 +107,13 @@
           </select>
         </div>
         <div class="map-year-readout"><span>VIEWING</span><strong id="mapYearReadout">2016 to 2026</strong></div>
-        <div id="categoryLegend" class="category-legend" aria-label="Issue icon key"></div>
+        <div class="issue-key">
+          <span class="toolbar-label">ISSUE KEY</span>
+          <div id="categoryLegend" class="category-legend" aria-label="Issue icon key"></div>
+        </div>
       </div>
 
-      <div class="map-layout">
+      <div class="map-workspace">
         <div class="map-frame">
           <div id="boardMap" class="atlas-map" role="img" aria-label="Interactive map of Brooklyn community districts"><div class="map-loading">Loading Brooklyn map…</div></div>
           <div class="map-legend">
@@ -119,17 +122,27 @@
             <span>MORE</span>
             <strong id="legendMetric">ISSUES RAISED</strong>
           </div>
-          <p class="map-source">Darker means more matching records. Click a neighborhood for details. Boundaries: NYC Planning.</p>
+          <p class="map-source">Boundaries: NYC Planning. Hover or click a board to see its leading issues.</p>
         </div>
 
-        <aside id="mapDossier" class="map-dossier" aria-live="polite">
-          <p class="section-label">NEIGHBORHOOD BRIEF</p>
-          <h3>Pick a neighborhood</h3>
-          <p id="dossierNeighborhoods" class="dossier-neighborhoods"></p>
-          <p class="dossier-intro">Click the map for a quick local brief.</p>
-          <div id="dossierBody"></div>
+        <aside id="boardDirectory" class="board-directory" aria-label="Brooklyn Community Board key">
+          <div class="board-directory-head">
+            <div><p class="section-label">BOARD KEY</p><h3>Brooklyn’s 18 boards</h3></div>
+            <span>Numbers match the map</span>
+          </div>
+          <div id="boardDirectoryList" class="board-directory-list" aria-live="polite">
+            <p class="board-directory-loading">Loading board names…</p>
+          </div>
         </aside>
       </div>
+
+      <aside id="mapDossier" class="map-dossier" aria-live="polite">
+        <p class="section-label">NEIGHBORHOOD BRIEF</p>
+        <h3>Pick a neighborhood</h3>
+        <p id="dossierNeighborhoods" class="dossier-neighborhoods"></p>
+        <p class="dossier-intro">Click the map or board key for a quick local brief.</p>
+        <div id="dossierBody"></div>
+      </aside>
     </section>
 
     <section class="post-map-tools" aria-label="About this view">
