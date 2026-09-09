@@ -6,27 +6,28 @@ Brooklyn Asks is an independent public-interest tracker for Brooklyn Community B
 
 - Loads the current NYC Register of Community Board Budget Requests.
 - Filters to Brooklyn’s 18 Community Boards.
-- Preserves official tracking codes, source dates, and source links.
-- Adds sourced historical records from official Community District Needs documents.
+- Preserves tracking codes, source dates, source links, board, agency, and priority.
+- Adds sourced historical records from official Community District Needs / Budget Request documents.
 - Flags recurring themes conservatively across fiscal years.
-- Provides archive, historical, and Community District map views.
-- Includes public feedback, contribution, sharing, and legal/privacy surfaces.
+- Provides archive, history, map, sharing, feedback, contribution, and legal/privacy views.
+
+## Historical coverage
+
+The historical archive is being reconstructed from official NYC and Community Board records rather than inferred from the current Open Data snapshot. It currently includes curated records from FY2017, FY2018, FY2025, and FY2026, with newer live records layered separately.
+
+Coverage is intentionally incomplete while older board documents are ingested and QA’d. Missing records do not imply that a board made no request.
 
 ## Data sources
 
-Primary sources:
-
 - NYC Open Data — Register of Community Board Budget Requests (`vn4m-mk4t`)
 - NYC Department of City Planning — Community District boundaries (`5crt-au7u`)
-- Official Brooklyn Community Board District Needs / Budget Request documents
+- Official NYC Planning and Brooklyn Community Board District Needs / Budget Request documents
 
 City agencies remain the authoritative source for City data. Brooklyn Asks is an unofficial reading and research aid.
 
-## Important methodology note
+## Methodology
 
-An agency response is not proof that a project was physically funded, built, or completed. Published response, derived classification, recurring-theme matching, and independently verified real-world outcome are treated as separate facts.
-
-Historical coverage is growing and is not yet complete across every board and fiscal year.
+An agency response is not proof that a project was physically funded, built, or completed. Published response, derived classification, recurring-theme matching, and independently verified real-world outcome are separate facts.
 
 ## Run locally
 
@@ -43,14 +44,12 @@ Open `http://localhost:8788`.
 npx wrangler pages deploy public --project-name brooklyn-asks
 ```
 
-The project is static and requires no paid database or build step.
-
 ## Contributing
 
-Corrections and contributions are welcome. Please preserve source URLs, fiscal-year context, and provenance for factual records.
+Corrections and contributions are welcome. Preserve source URLs, fiscal-year context, and provenance for factual records.
 
-Open an issue or pull request: https://github.com/bpiper02/brooklyn-asks
+https://github.com/bpiper02/brooklyn-asks
 
 ## License
 
-Application code is MIT licensed. Source data remains subject to the terms and ownership of its originating public agencies. See `public/legal.html` for project notices and source-use notes.
+Application code is MIT licensed. Source data remains subject to the terms and ownership of its originating public agencies. See `public/legal.html` for notices and source-use notes.
