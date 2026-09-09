@@ -1,0 +1,9 @@
+{
+  "name": "brooklyn-asks",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/core.mjs",
+    "snapshot": "node scripts/snapshot.mjs"
+  }
+}

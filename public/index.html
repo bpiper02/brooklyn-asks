@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#eee7d8" />
+  <meta name="description" content="A sourced public record of Brooklyn Community Board budget requests, agency responses, and recurring asks." />
+  <title>Brooklyn Asks — Public Record Tracker</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="utility-row">
+      <span>ISSUE NO. 001</span>
+      <span>BROOKLYN, NEW YORK</span>
+      <span id="headerUpdated">UPDATED —</span>
+    </div>
+    <div class="masthead-row">
+      <a class="masthead" href="#top" aria-label="Brooklyn Asks home">Brooklyn Asks</a>
+      <p class="masthead-kicker">A public record of what the borough asked the city for.</p>
+    </div>
+    <nav class="primary-nav" aria-label="Primary navigation">
+      <button class="nav-tab is-active" data-view="archive" type="button">Archive</button>
+      <button class="nav-tab" data-view="map" type="button">Map</button>
+      <a href="#methodology">Method</a>
+      <a href="https://data.cityofnewyork.us/d/vn4m-mk4t" target="_blank" rel="noopener noreferrer">NYC source ↗</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="intro" aria-labelledby="page-title">
+      <p class="section-label">THE QUESTION</p>
+      <h1 id="page-title">What did Brooklyn ask the city for?</h1>
+      <p class="dek">Search official Community Board budget requests, read the city’s published response, and find needs that keep returning year after year.</p>
+
+      <div class="search-row">
+        <label class="search-field" for="search">
+          <span>SEARCH THE RECORD</span>
+          <input id="search" type="search" autocomplete="off" placeholder="sidewalks, schools, parks, sanitation…" />
+        </label>
+        <button id="clearSearch" class="text-button" type="button" hidden>Clear</button>
+      </div>
+
+      <div class="live-line" role="status">
+        <span class="live-mark" aria-hidden="true"></span>
+        <span id="sourceStatus">Loading NYC Open Data…</span>
+      </div>
+    </section>
+
+    <section class="ledger" aria-label="Dataset summary">
+      <article><span class="ledger-label">CURRENT RECORDS</span><strong id="requestCount">—</strong></article>
+      <article><span class="ledger-label">BROOKLYN BOARDS</span><strong id="boardCount">18</strong></article>
+      <article><span class="ledger-label">RECURRING THEMES</span><strong id="repeatCount">—</strong></article>
+      <article><span class="ledger-label">LATEST SOURCE</span><strong id="latestDate">—</strong></article>
+    </section>
+
+    <section class="filters" aria-label="Filter requests">
+      <div class="filter-field">
+        <label for="boardFilter">BOARD</label>
+        <select id="boardFilter"><option value="all">All Brooklyn boards</option></select>
+      </div>
+      <div class="filter-field">
+        <label for="statusFilter">AGENCY RESPONSE</label>
+        <select id="statusFilter">
+          <option value="all">All responses</option>
+          <option value="funded">Funded / completed</option>
+          <option value="supported">Supported</option>
+          <option value="uncertain">Funding uncertain</option>
+          <option value="not_funded">Supported, not accommodated</option>
+          <option value="not_supported">Not supported</option>
+          <option value="followup">Needs follow-up</option>
+          <option value="unknown">Unclassified</option>
+        </select>
+      </div>
+      <label class="check-field"><input id="repeatOnly" type="checkbox" /> <span>Recurring only</span></label>
+      <div class="sort-note">SORT: recurring first, then newest source</div>
+    </section>
+
+    <section id="archiveView" class="view-panel">
+      <header class="section-head">
+        <div>
+          <p class="section-label">THE ARCHIVE</p>
+          <h2 id="resultsTitle">Brooklyn-wide</h2>
+        </div>
+        <p id="resultMeta">—</p>
+      </header>
+
+      <div class="archive-columns" aria-hidden="true">
+        <span>BOARD / YEAR</span><span>REQUEST</span><span>AGENCY / RESPONSE</span>
+      </div>
+      <section id="results" class="results" aria-live="polite"></section>
+      <button id="loadMore" class="load-more" type="button" hidden>Show more records</button>
+    </section>
+
+    <section id="mapView" class="view-panel" hidden>
+      <header class="section-head">
+        <div>
+          <p class="section-label">THE MAP</p>
+          <h2>Where are the asks coming from?</h2>
+        </div>
+        <p>Community District shading reflects matching records, not need severity.</p>
+      </header>
+
+      <div class="map-layout">
+        <div class="map-frame">
+          <div id="boardMap" class="atlas-map" role="img" aria-label="Interactive atlas of Brooklyn community districts"></div>
+          <div class="map-legend">
+            <span>FEWER RECORDS</span>
+            <span class="legend-ramp" aria-hidden="true"></span>
+            <span>MORE RECORDS</span>
+          </div>
+          <p class="map-source">District boundaries: NYC Department of City Planning. Atlas shading reflects matching record count. Click a district for its record brief.</p>
+        </div>
+        <aside id="mapDossier" class="map-dossier" aria-live="polite">
+          <p class="section-label">BOARD DOSSIER</p>
+          <h3>Brooklyn-wide</h3>
+          <p class="dossier-intro">Choose a Community District on the map to inspect its request volume, recurring themes, agencies, and response mix.</p>
+          <div id="dossierBody"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="methodology" class="methodology">
+      <header class="section-head">
+        <div>
+          <p class="section-label">METHOD / NOTES</p>
+          <h2>What this record does — and does not — claim</h2>
+        </div>
+      </header>
+      <div class="method-grid">
+        <article>
+          <span class="method-no">01</span>
+          <h3>Official source first</h3>
+          <p>Core request and agency-response records come from NYC’s Register of Community Board Budget Requests. We retain tracking codes and publication dates.</p>
+        </article>
+        <article>
+          <span class="method-no">02</span>
+          <h3>Response is not delivery</h3>
+          <p>A supportive agency response is not proof that a project was funded, built, or completed. Published response and independently verified outcome remain separate facts.</p>
+        </article>
+        <article>
+          <span class="method-no">03</span>
+          <h3>Recurring is conservative</h3>
+          <p>A recurring theme means the same board requested the same normalized request type in multiple fiscal years. Exact-project matching needs stronger location or description evidence.</p>
+        </article>
+      </div>
+      <p class="fineprint">Unofficial public-interest reading aid. Open the cited NYC source for authoritative wording. Derived labels are designed to make the record easier to inspect, not to replace the underlying record.</p>
+    </section>
+  </main>
+
+  <template id="requestTemplate">
+    <article class="record-row">
+      <div class="record-index">
+        <strong class="board-code"></strong>
+        <span class="year"></span>
+        <span class="repeat-mark" hidden></span>
+      </div>
+      <div class="record-main">
+        <h3 class="request-title"></h3>
+        <p class="request-detail" hidden></p>
+        <details class="record-details">
+          <summary>Read agency response & source</summary>
+          <div class="response-copy">
+            <div class="response-rule">
+              <span class="status-label"></span>
+              <span class="publication-date"></span>
+            </div>
+            <p class="response"></p>
+            <div class="source-strip">
+              <span class="tracking"></span>
+              <a class="source-link" target="_blank" rel="noopener noreferrer">Open official record ↗</a>
+            </div>
+          </div>
+        </details>
+      </div>
+      <div class="record-agency">
+        <strong class="agency"></strong>
+        <span class="priority"></span>
+        <span class="status-short"></span>
+      </div>
+    </article>
+  </template>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
