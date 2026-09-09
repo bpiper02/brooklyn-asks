@@ -31,7 +31,8 @@ assert.match(index, /id="boardDirectoryList"/, 'Board key must have a dedicated 
 assert.match(index, /Numbers match the map/, 'Board key must explain its relationship to map labels');
 assert.match(mapJs, /function boardNameFromPath\(path\)/, 'Board key names must be derived from rendered map metadata');
 assert.match(mapJs, /function syncBoardDirectory\(\)/, 'Board directory must synchronize with rendered districts');
-assert.match(mapJs, /pathForBoard\(item\.board\)\?\.click\(\)/, 'Board key selection must reuse the map district click behavior');
+assert.match(mapJs, /function selectBoard\(board\)/, 'Board key must have a first-class selection path');
+assert.match(mapJs, /button\.addEventListener\('click', \(\) => selectBoard\(item\.board\)\)/, 'Board-key click must select directly rather than simulate a map click');
 assert.match(mapJs, /padStart\(2,'0'\)/, 'Map labels should collapse to compact Community Board identifiers');
 assert.match(mapCss, /\.atlas-neighborhood-label\{display:none!important\}/, 'Long neighborhood names must not compete inside small polygons');
 assert.match(mapCss, /\.map-workspace\{display:grid;grid-template-columns:minmax\(0,1fr\) 270px/, 'Desktop atlas must reserve a side rail for the board key');
@@ -41,11 +42,12 @@ assert.match(mapJs, /function refreshTopicVisibility\(\)/, 'Topic icon visibilit
 assert.match(mapCss, /drop-shadow\(0 7px 5px/, 'Selected districts should receive restrained depth rather than a full 3D dependency');
 assert.doesNotMatch(index, /mapbox|leaflet/i, 'Modern atlas pass must not introduce external map dependencies');
 
-assert.match(mapJs, /function setBoardFilterValue\(board\)/, 'Map and board-key selection must synchronize with the Neighborhood filter');
+assert.match(mapJs, /function setBoardFilterValue\(board\)/, 'Map selection must synchronize with the Neighborhood filter');
 assert.match(mapJs, /root\.addEventListener\('click', prepareSelection, true\)/, 'Selection sync must run before the core district click handler');
 assert.match(mapJs, /select\.dispatchEvent\(new Event\('change',\{bubbles:true\}\)\)/, 'Selection must update the rest of the filtered UI');
 assert.match(mapJs, /filterValue && filterValue !== 'all'/, 'Neighborhood filter must be the primary visible selected-board source');
 assert.match(mapJs, /const contextBoard = hoverBoard \|\| selected/, 'Topic icons must preview only one board at a time');
+assert.match(mapJs, /if \(event\.target\?\.id === 'boardFilter'\) hoverBoard = null/, 'Changing the Neighborhood selector must clear stale hover preview state');
 assert.match(mapCss, /\.atlas-district:hover,\.atlas-district\.is-key-hover,\.atlas-district:focus-visible\{[^}]*stroke:#315b6d!important/, 'Hover and keyboard focus must look different from persistent selection');
 assert.match(mapCss, /\.atlas-district\.is-selected\{stroke:var\(--red\)!important/, 'Persistent selected board must retain a distinct map state');
 assert.match(mapCss, /\.board-directory-row\.is-active\{[^}]*box-shadow:inset 4px 0 var\(--red\)/, 'Active board-key row must be visually unmistakable');
