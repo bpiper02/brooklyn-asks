@@ -1,39 +1,107 @@
 (() => {
-  const $ = (s) => document.querySelector(s);
-  const norm = (s) => String(s ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const q = (s) => document.querySelector(s);
+  const normalize = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
   let records = [];
 
+  function addOptions() {
+    const boards = Array.from(new Set(records.map(r => r.board))).sort((a,b) => a-b);
+    const years = Array.from(new Set(records.map(r => r.fiscalYear))).sort((a,b) => b-a);
+    for (const board of boards) {
+      const option = document.createElement('option');
+      option.value = String(board);
+      option.textContent = `Brooklyn CB ${board}`;
+      q('#historyBoard').appendChild(option);
+    }
+    for (const year of years) {
+      const option = document.createElement('option');
+      option.value = String(year);
+      option.textContent = `FY ${year}`;
+      q('#historyYear').appendChild(option);
+    }
+  }
+
   function render() {
-    const board = $('#historyBoard').value;
-    const year = $('#historyYear').value;
-    const q = norm($('#historySearch').value);
+    const board = q('#historyBoard').value;
+    const year = q('#historyYear').value;
+    const search = normalize(q('#historySearch').value);
     const filtered = records.filter(r => {
       if (board !== 'all' && String(r.board) !== board) return false;
       if (year !== 'all' && String(r.fiscalYear) !== year) return false;
-      if (q && !norm([r.request, r.detail, r.agency, r.priority].join(' ')).includes(q)) return false;
+      if (search && !normalize([r.request, r.detail, r.agency, r.priority].join(' ')).includes(search)) return false;
       return true;
     }).sort((a,b) => (b.fiscalYear-a.fiscalYear) || (a.board-b.board));
 
-    $('#historyMeta').textContent = `${filtered.length.toLocaleString()} sourced historical records`;
-    const root = $('#historyResults');
-    root.innerHTML = filtered.map(r => `
-      <article class="history-row">
-        <div class="history-index"><strong>BK CB ${String(r.board).padStart(2,'0')}</strong><span>FY ${r.fiscalYear}</span><span>${r.priority ? `Priority ${escapeHtml(r.priority)}` : ''}</span></div>
-        <div><h3>${escapeHtml(r.request)}</h3>${r.detail ? `<p>${escapeHtml(r.detail)}</p>` : ''}<p class="history-agency">${escapeHtml(r.agency || 'Agency unavailable')}</p></div>
-        <div class="history-source"><span>${r.response && !r.response.toLowerCase().includes('historical district-needs') ? escapeHtml(r.response) : 'Historical source does not include an agency response.'}</span><a href="${escapeAttr(r.sourceUrl)}" target="_blank" rel="noopener noreferrer">Official source ↗</a></div>
-      </article>`).join('') || '<p class="empty">No historical records match these filters.</p>';
+    q('#historyMeta').textContent = `${filtered.length.toLocaleString()} sourced historical records`;
+    const root = q('#historyResults');
+    root.replaceChildren();
+
+    if (!filtered.length) {
+      const empty = document.createElement('p');
+      empty.className = 'empty';
+      empty.textContent = 'No historical records match these filters.';
+      root.appendChild(empty);
+      return;
+    }
+
+    for (const r of filtered) {
+      const article = document.createElement('article');
+      article.className = 'history-row';
+
+      const index = document.createElement('div');
+      index.className = 'history-index';
+      const boardEl = document.createElement('strong');
+      boardEl.textContent = `BK CB ${String(r.board).padStart(2,'0')}`;
+      const yearEl = document.createElement('span');
+      yearEl.textContent = `FY ${r.fiscalYear}`;
+      const priorityEl = document.createElement('span');
+      priorityEl.textContent = r.priority ? `Priority ${r.priority}` : '';
+      index.append(boardEl, yearEl, priorityEl);
+
+      const body = document.createElement('div');
+      const title = document.createElement('h3');
+      title.textContent = r.request || 'Untitled request';
+      const detail = document.createElement('p');
+      detail.textContent = r.detail || '';
+      const agency = document.createElement('p');
+      agency.className = 'history-agency';
+      agency.textContent = r.agency || 'Agency unavailable';
+      body.append(title, detail, agency);
+
+      const source = document.createElement('div');
+      source.className = 'history-source';
+      const response = document.createElement('span');
+      response.textContent = r.response && !String(r.response).toLowerCase().includes('historical')
+        ? r.response
+        : 'Historical source does not include an agency response.';
+      const link = document.createElement('a');
+      link.href = r.sourceUrl || '#';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = 'Official source ↗';
+      source.append(response, link);
+
+      article.append(index, body, source);
+      root.appendChild(article);
+    }
   }
 
-  function escapeHtml(value='') { return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-  function escapeAttr(value='') { return escapeHtml(value); }
-
-  fetch('./data/historical-seed.json').then(r => r.json()).then(data => {
-    records = data.filter(r => r.fiscalYear && r.fiscalYear < 2027);
-    const boards = [...new Set(records.map(r => r.board))].sort((a,b)=>a-b);
-    const years = [...new Set(records.map(r => r.fiscalYear))].sort((a,b)=>b-a);
-    boards.forEach(v => $('#historyBoard').insertAdjacentHTML('beforeend', `<option value="${v}">Brooklyn CB ${v}</option>`));
-    years.forEach(v => $('#historyYear').insertAdjacentHTML('beforeend', `<option value="${v}">FY ${v}</option>`));
-    ['#historyBoard','#historyYear','#historySearch'].forEach(s => $(s).addEventListener('input', render));
+  Promise.all([
+    fetch('./data/historical-seed.json').then(r => r.json()),
+    fetch('./data/historical-2018.json').then(r => r.json())
+  ]).then(parts => {
+    const seen = new Set();
+    records = parts.flat().filter(r => r.fiscalYear && r.fiscalYear < 2027).filter(r => {
+      const key = r.trackingCode || `${r.board}|${r.fiscalYear}|${normalize(r.request)}|${normalize(r.detail)}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    addOptions();
+    for (const selector of ['#historyBoard','#historyYear','#historySearch']) {
+      q(selector).addEventListener('input', render);
+    }
     render();
-  }).catch(() => { $('#historyResults').innerHTML = '<p class="empty">Historical records could not be loaded.</p>'; });
+  }).catch(() => {
+    q('#historyResults').textContent = 'Historical records could not be loaded.';
+  });
 })();
