@@ -259,6 +259,7 @@
       seen.add(key);
       return true;
     });
+    if (!coverage.length && !raw.length) throw new Error('No historical data sources loaded');
     records = addRecurring(raw);
 
     addOptions();
