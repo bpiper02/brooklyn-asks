@@ -16,6 +16,9 @@ assert.equal(classify311Problem('Street Flooding'),'water');
 assert.equal(classify311Problem('HEAT/HOT WATER'),'housing');
 assert.equal(classify311Problem('Missed Collection'),'sanitation');
 assert.equal(classify311Problem('Street Condition'),'streets_transit');
+assert.equal(classify311Problem('Illegal Parking'),'streets_transit');
+assert.equal(classify311Problem('Damaged Tree'),'parks');
+assert.equal(classify311Problem('Park Maintenance'),'parks');
 assert.equal(commonTopicFor311('water'),'infrastructure');
 assert.equal(commonTopicFor311('noise'),null);
 
