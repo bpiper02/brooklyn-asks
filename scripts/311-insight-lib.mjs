@@ -19,7 +19,7 @@ export function classify311Problem(problem='') {
   if (/(rodent|\brat\b|\bmouse\b|\bmice\b|garbage|sanitation|dirty|litter|recycling|missed collection|derelict vehicle)/.test(t)) return 'sanitation';
   if (/(heat|hot water|housing|tenant|apartment|building|elevator|construction|plumbing|paint|mold)/.test(t)) return 'housing';
   if (/(flood|sewer|water system|catch basin|hydrant|water leak)/.test(t)) return 'water';
-  if (/(park|\btree\b|playground|recreation)/.test(t)) return 'parks';
+  if (/(\bpark\b|\bparks\b|\btree\b|playground|recreation)/.test(t)) return 'parks';
   if (/(school|education)/.test(t)) return 'schools';
   if (/(street|sidewalk|pothole|traffic|parking|bike|bicycle|bus|subway|signal|streetlight|road|bridge|highway)/.test(t)) return 'streets_transit';
   if (/(police|public safety|illegal fireworks|drug activity)/.test(t)) return 'safety';
