@@ -6,6 +6,7 @@ import { buildAggregateQuery, mergeNormalizedRows, normalizeAggregateRow, valida
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = resolve(ROOT, 'public/data/311-monthly.json');
 const PAGE_SIZE = 50000;
+const REQUEST_TIMEOUT_MS = 45000;
 const SOURCES = [
   { id:'76ig-c548', label:'311 Service Requests 2010–2019', startDate:'2016-01-01', endDate:'2020-01-01' },
   { id:'erm2-nwe9', label:'311 Service Requests 2020–present', startDate:'2020-01-01', endDate:null }
@@ -21,44 +22,106 @@ function endpointFor(id, params) {
   return url;
 }
 
-async function fetchJsonWithRetry(url, {attempts=4}={}) {
+function yearSlices(startDate, endDate) {
+  const start = new Date(`${startDate}T00:00:00Z`);
+  const end = new Date(`${endDate}T00:00:00Z`);
+  if (Number.isNaN(start.valueOf()) || Number.isNaN(end.valueOf()) || start >= end) {
+    throw new Error(`Invalid 311 date range: ${startDate} to ${endDate}`);
+  }
+
+  const slices = [];
+  let cursor = start;
+  while (cursor < end) {
+    const nextYear = new Date(Date.UTC(cursor.getUTCFullYear() + 1, 0, 1));
+    const sliceEnd = nextYear < end ? nextYear : end;
+    slices.push({
+      startDate: cursor.toISOString().slice(0,10),
+      endDate: sliceEnd.toISOString().slice(0,10),
+      label: String(cursor.getUTCFullYear())
+    });
+    cursor = sliceEnd;
+  }
+  return slices;
+}
+
+async function fetchJsonWithRetry(url, {attempts=4, timeoutMs=REQUEST_TIMEOUT_MS}={}) {
   let lastError;
   for (let attempt=1; attempt<=attempts; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
-      const res = await fetch(url, { headers:{accept:'application/json'} });
+      const res = await fetch(url, {
+        headers:{accept:'application/json'},
+        signal:controller.signal
+      });
       if (res.ok) return await res.json();
       const retryable = res.status === 429 || res.status >= 500;
       const body = await res.text().catch(()=> '');
       if (!retryable) throw new Error(`NYC Open Data ${res.status}: ${body.slice(0,180)}`);
       lastError = new Error(`NYC Open Data ${res.status}`);
     } catch (error) {
-      lastError = error;
+      lastError = error?.name === 'AbortError'
+        ? new Error(`NYC Open Data request timed out after ${Math.round(timeoutMs/1000)}s`)
+        : error;
+    } finally {
+      clearTimeout(timer);
     }
-    if (attempt < attempts) await new Promise(r => setTimeout(r, 750 * 2 ** (attempt-1)));
+    if (attempt < attempts) {
+      console.warn(`  retry ${attempt}/${attempts-1}: ${lastError.message}`);
+      await new Promise(r => setTimeout(r, 750 * 2 ** (attempt-1)));
+    }
   }
   throw lastError || new Error('311 request failed');
 }
 
-async function fetchSource(source, today) {
-  const endDate = source.endDate || today;
+async function fetchRange(source, range) {
   const accepted = [];
   const skipped = {};
   let offset = 0;
+  let pageNo = 0;
 
   while (true) {
-    const query = buildAggregateQuery({startDate:source.startDate,endDate,limit:PAGE_SIZE,offset});
+    const query = buildAggregateQuery({
+      startDate:range.startDate,
+      endDate:range.endDate,
+      limit:PAGE_SIZE,
+      offset
+    });
     const page = await fetchJsonWithRetry(endpointFor(source.id, query));
     if (!Array.isArray(page)) throw new Error(`${source.id} returned a non-array payload`);
 
+    pageNo += 1;
     for (const raw of page) {
       const normalized = normalizeAggregateRow(raw, source.id);
       if (normalized.ok) accepted.push(normalized.value);
       else skipped[normalized.reason] = (skipped[normalized.reason] || 0) + 1;
     }
 
+    console.log(`  ${range.label}: page ${pageNo}, ${page.length.toLocaleString()} aggregates`);
     if (page.length < PAGE_SIZE) break;
     offset += PAGE_SIZE;
   }
+
+  return {accepted, skipped};
+}
+
+async function fetchSource(source, today) {
+  const endDate = source.endDate || today;
+  const accepted = [];
+  const skipped = {};
+  const slices = yearSlices(source.startDate, endDate);
+
+  console.log(`Fetching ${source.label} (${source.id})...`);
+  for (const range of slices) {
+    console.log(` ${range.label}: ${range.startDate} -> ${range.endDate}`);
+    const result = await fetchRange(source, range);
+    for (const row of result.accepted) accepted.push(row);
+    for (const [reason,count] of Object.entries(result.skipped)) {
+      skipped[reason] = (skipped[reason] || 0) + count;
+    }
+    console.log(`  done ${range.label}: ${result.accepted.length.toLocaleString()} accepted`);
+  }
+
   return {accepted, skipped, endDate};
 }
 
@@ -69,8 +132,6 @@ async function main() {
 
   for (const source of SOURCES) {
     const result = await fetchSource(source, today);
-    // Do not spread a very large array into push(); that turns every row into
-    // a function argument and can exceed Node's call-stack/argument limit.
     for (const row of result.accepted) parts.push(row);
     sourceStats.push({
       dataset:source.id,
