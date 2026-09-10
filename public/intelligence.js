@@ -44,7 +44,7 @@ export function changeLabel(changePct) {
 
 function problemSignals(problem, months) {
   const signals = [];
-  if (problem.monthsActive === months) signals.push(`reported every month`);
+  if (problem.monthsActive === months) signals.push('reported every month');
   else if (Number.isFinite(problem.monthsActive)) signals.push(`reported in ${problem.monthsActive} of ${months} months`);
 
   if (Number.isFinite(problem.changePct) && Math.abs(problem.changePct) >= 10) {
@@ -181,4 +181,4 @@ async function start() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', start);
+if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded', start);
