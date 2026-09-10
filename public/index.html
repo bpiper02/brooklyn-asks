@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="./hooky.css" />
   <link rel="stylesheet" href="./clarity.css" />
   <link rel="stylesheet" href="./map-first.css" />
+  <link rel="stylesheet" href="./intelligence.css" />
 </head>
 <body>
   <header class="site-header">
@@ -136,6 +137,11 @@
         </aside>
       </div>
 
+      <section class="neighborhood-pulse" aria-labelledby="pulseHeading">
+        <h2 id="pulseHeading" class="visually-hidden">Recent neighborhood 311 patterns</h2>
+        <div id="neighborhoodPulse" aria-live="polite"><p class="pulse-state">Loading recent 311 patterns…</p></div>
+      </section>
+
       <aside id="mapDossier" class="map-dossier" aria-live="polite">
         <p class="section-label">NEIGHBORHOOD BRIEF</p>
         <h3>Pick a neighborhood</h3>
@@ -192,6 +198,7 @@
   </template>
 
   <script type="module" src="./app.js"></script>
+  <script type="module" src="./intelligence.js"></script>
   <script src="./share.js" defer></script>
   <script src="./clarity.js" defer></script>
   <script src="./map-first.js" defer></script>
